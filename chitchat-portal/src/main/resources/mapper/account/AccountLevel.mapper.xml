@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountLevelDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.account.AccountLevel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="start_growth_point" jdbcType="INTEGER" property="startGrowthPoint" />
+    <result column="growth_point" jdbcType="INTEGER" property="growthPoint" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="default_status" jdbcType="BIT" property="defaultStatus" />
+    <result column="comment_growth_point" jdbcType="INTEGER" property="commentGrowthPoint" />
+    <result column="privilege_sign_in" jdbcType="INTEGER" property="privilegeSignIn" />
+    <result column="privilege_comment" jdbcType="INTEGER" property="privilegeComment" />
+    <result column="privilege_promotion" jdbcType="INTEGER" property="privilegePromotion" />
+    <result column="privilege_member_price" jdbcType="INTEGER" property="privilegeMemberPrice" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+
+  <sql id="Base_Column_List">
+    id, type, level_name, start_growth_point, growth_point, icon, default_status, comment_growth_point,
+    privilege_sign_in, privilege_comment, privilege_promotion, privilege_member_price,
+    memo, created_time
+  </sql>
+
+  <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountLevel">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_account_level (type, level_name, start_growth_point,
+    growth_point, icon, default_status,
+    comment_growth_point, privilege_sign_in, privilege_comment,
+    privilege_promotion, privilege_member_price,
+    memo, created_time)
+    values (#{type,jdbcType=INTEGER}, #{levelName,jdbcType=VARCHAR}, #{startGrowthPoint,jdbcType=INTEGER},
+    #{growthPoint,jdbcType=INTEGER}, #{icon,jdbcType=VARCHAR}, #{defaultStatus,jdbcType=BIT},
+    #{commentGrowthPoint,jdbcType=INTEGER}, #{privilegeSignIn,jdbcType=INTEGER}, #{privilegeComment,jdbcType=INTEGER},
+    #{privilegePromotion,jdbcType=INTEGER}, #{privilegeMemberPrice,jdbcType=INTEGER},
+    #{memo,jdbcType=VARCHAR}, #{createdTime,jdbcType=TIMESTAMP})
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountLevel">
+    update app_account_level
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null">
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="startGrowthPoint != null">
+        start_growth_point = #{startGrowthPoint,jdbcType=INTEGER},
+      </if>
+      <if test="growthPoint != null">
+        growth_point = #{growthPoint,jdbcType=INTEGER},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="defaultStatus != null">
+        default_status = #{defaultStatus,jdbcType=BIT},
+      </if>
+      <if test="commentGrowthPoint != null">
+        comment_growth_point = #{commentGrowthPoint,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeSignIn != null">
+        privilege_sign_in = #{privilegeSignIn,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeComment != null">
+        privilege_comment = #{privilegeComment,jdbcType=INTEGER},
+      </if>
+      <if test="privilegePromotion != null">
+        privilege_promotion = #{privilegePromotion,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeMemberPrice != null">
+        privilege_member_price = #{privilegeMemberPrice,jdbcType=INTEGER},
+      </if>
+      <if test="memo != null">
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update" parameterType="com.chitchat.portal.bean.account.AccountLevel">
+    update app_account_level
+    set type = #{type,jdbcType=INTEGER},
+        level_name = #{levelName,jdbcType=VARCHAR},
+        start_growth_point = #{startGrowthPoint,jdbcType=INTEGER},
+        growth_point = #{growthPoint,jdbcType=INTEGER},
+        icon = #{icon,jdbcType=VARCHAR},
+        default_status = #{defaultStatus,jdbcType=BIT},
+        comment_growth_point = #{commentGrowthPoint,jdbcType=INTEGER},
+        privilege_sign_in = #{privilegeSignIn,jdbcType=INTEGER},
+        privilege_comment = #{privilegeComment,jdbcType=INTEGER},
+        privilege_promotion = #{privilegePromotion,jdbcType=INTEGER},
+        privilege_member_price = #{privilegeMemberPrice,jdbcType=INTEGER},
+        memo = #{memo,jdbcType=VARCHAR},
+        created_time = #{createdTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.account.AccountLevel">
+    select * from `app_account_level`
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.chitchat.portal.bean.account.AccountLevel">
+    select *
+    from app_account_level
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.AccountLevel">
+    select *
+    from app_account_level
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+    <!--根据经验值获取对应的等级-->
+    <select id="getLevelByExp" resultType="com.chitchat.portal.bean.account.AccountLevel">
+      select *
+      from app_account_level
+      where start_growth_point &lt; #{lastExp} and growth_point &gt;= #{lastExp} limit 1
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_account_level
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+</mapper>

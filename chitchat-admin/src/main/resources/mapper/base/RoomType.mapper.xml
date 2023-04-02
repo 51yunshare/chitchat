@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.RoomTypeDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.admin.bean.RoomType">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="type_name" jdbcType="VARCHAR" property="typeName"/>
+        <result column="limit_user_num" jdbcType="INTEGER" property="limitUserNum"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, type_name, limit_user_num, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.chitchat.admin.bean.RoomType">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sys_base_room_type (
+        type_name,
+        limit_user_num,
+        created_time
+        )
+        values (
+        #{typeName,jdbcType=VARCHAR},
+        #{limitUserNum,jdbcType=INTEGER},
+        now()
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.RoomType">
+        update sys_base_room_type
+        <set>
+            <if test="typeName != null">
+                type_name = #{typeName,jdbcType=VARCHAR},
+            </if>
+            <if test="limitUserNum != null">
+                limit_user_num = #{limitUserNum,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="update" parameterType="com.chitchat.admin.bean.RoomType">
+        update sys_base_room_type
+        set type_name     = #{typeName,jdbcType=VARCHAR},
+            limit_user_num = #{limitUserNum,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.chitchat.admin.bean.RoomType">
+        select *
+        from sys_base_room_type
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.admin.bean.RoomType">
+        select *
+        from sys_base_room_type
+        where 1=1
+            <if test="likeName != null and likeName !=''">
+                and type_name like concat('%',#{likeName},'%')
+            </if>
+        order by id desc
+    </select>
+
+    <!--名称获取房间类型-->
+    <select id="getByName" resultType="com.chitchat.admin.bean.RoomType">
+        select *
+        from sys_base_room_type
+        where type_name = #{typeName}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from sys_base_room_type
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

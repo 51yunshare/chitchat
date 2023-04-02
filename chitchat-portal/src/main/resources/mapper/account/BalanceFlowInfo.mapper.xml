@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.BalanceFlowInfoDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="flow_type" jdbcType="INTEGER" property="flowType" />
+    <result column="pre_balance_num" jdbcType="DECIMAL" property="preBalanceNum" />
+    <result column="cur_order_num" jdbcType="DECIMAL" property="curOrderNum" />
+    <result column="post_balance_num" jdbcType="DECIMAL" property="postBalanceNum" />
+    <result column="pay_id" jdbcType="BIGINT" property="payId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="account_id" jdbcType="BIGINT" property="accountId" />
+    <result column="balance_id" jdbcType="BIGINT" property="balanceId" />
+    <result column="created_user_id" jdbcType="BIGINT" property="createdUserId" />
+    <result column="created_user_name" jdbcType="VARCHAR" property="createdUserName" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, type, flow_type, pre_balance_num, cur_order_num, post_balance_num, pay_id, order_id, order_sn, account_id, balance_id,
+    created_user_id, created_user_name, created_time
+  </sql>
+
+  <insert id="insert" parameterType="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_balance_flow_log (
+      type,
+      flow_type, pre_balance_num,
+      cur_order_num, post_balance_num, pay_id, order_id, order_sn,
+      account_id, balance_id, created_user_id, created_user_name,
+      created_time)
+    values (#{type,jdbcType=INTEGER}, #{flowType,jdbcType=INTEGER}, #{preBalanceNum,jdbcType=DECIMAL},
+    #{curOrderNum,jdbcType=DECIMAL}, #{postBalanceNum,jdbcType=DECIMAL}, #{payId,jdbcType=BIGINT},#{orderId,jdbcType=BIGINT},#{orderSn,jdbcType=VARCHAR},
+    #{accountId,jdbcType=BIGINT}, #{balanceId,jdbcType=BIGINT}, #{createdUserId,jdbcType=BIGINT}, #{createdUserName,jdbcType=VARCHAR},
+    now())
+  </insert>
+
+  <update id="update" parameterType="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    update app_balance_flow_log
+    set type = #{type,jdbcType=INTEGER},
+        flow_type = #{flowType,jdbcType=INTEGER},
+        pre_balance_num = #{preBalanceNum,jdbcType=DECIMAL},
+        cur_order_num = #{curOrderNum,jdbcType=DECIMAL},
+        post_balance_num = #{postBalanceNum,jdbcType=DECIMAL},
+        pay_id = #{payId,jdbcType=BIGINT},
+        order_id = #{orderId,jdbcType=BIGINT},
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+        account_id = #{accountId,jdbcType=BIGINT},
+        balance_id = #{balanceId,jdbcType=BIGINT},
+        created_user_id = #{createdUserId,jdbcType=BIGINT},
+        created_user_name = #{createdUserName,jdbcType=VARCHAR},
+        created_time = #{createdTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    update app_balance_flow_log
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="flowType != null">
+        flow_type = #{flowType,jdbcType=INTEGER},
+      </if>
+      <if test="preBalanceNum != null">
+        pre_balance_num = #{preBalanceNum,jdbcType=DECIMAL},
+      </if>
+      <if test="curOrderNum != null">
+        cur_order_num = #{curOrderNum,jdbcType=DECIMAL},
+      </if>
+      <if test="postBalanceNum != null">
+        post_balance_num = #{postBalanceNum,jdbcType=DECIMAL},
+      </if>
+      <if test="payId != null">
+        pay_id = #{payId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null">
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="balanceId != null">
+        balance_id = #{balanceId,jdbcType=BIGINT},
+      </if>
+      <if test="createdUserId != null">
+        created_user_id = #{createdUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createdUserName != null">
+        created_user_name = #{createdUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    select *
+    from app_balance_flow_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.BalanceInfo">
+    select *
+    from app_balance_flow_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_balance_flow_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.account.BalanceFlowInfo">
+    select
+           *
+    from `app_balance_flow_log`
+    where 1=1
+        <if test="type != null">
+          and type = #{type}
+        </if>
+        <if test="flowType != null">
+          and flow_type = #{flowType}
+        </if>
+        <if test="userInfo != null">
+          and account_id = #{userInfo.id}
+        </if>
+    order by id desc
+  </select>
+</mapper>

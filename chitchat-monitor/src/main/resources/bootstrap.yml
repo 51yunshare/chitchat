@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://192.168.10.150:8848
+        group: ${spring.profiles.active}
+        namespace: chitchat
+        username: nacos
+        password: nacos

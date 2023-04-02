@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_room_info` (
+            room_name,
+            room_type,
+            room_type_name,
+            limit_user_num,
+            room_notice,
+            room_img,
+            room_seq,
+            room_language,
+            user_update_seq,
+            room_user_num,
+            room_country,
+            room_tag,
+            mic_way,
+            mic_num,
+            hot_num,
+            contribution_num,
+            whether_lock,
+            room_pwd,
+            destroy_time,
+            created_user_id,
+            created_user_name,
+            created_time,
+            modified_time,
+            deleted
+        ) values (
+            #{roomName,jdbcType=VARCHAR},
+            #{roomType,jdbcType=INTEGER},
+            #{roomTypeName,jdbcType=VARCHAR},
+            #{limitUserNum,jdbcType=INTEGER},
+            #{roomNotice,jdbcType=VARCHAR},
+            #{roomImg,jdbcType=VARCHAR},
+            #{roomSeq,jdbcType=VARCHAR},
+            #{roomLanguage,jdbcType=VARCHAR},
+            #{userUpdateSeq,jdbcType=INTEGER},
+            #{roomUserNum,jdbcType=INTEGER},
+            #{roomCountry,jdbcType=VARCHAR},
+            #{roomTag,jdbcType=OTHER},
+            #{micWay,jdbcType=INTEGER},
+            #{micNum,jdbcType=INTEGER},
+            #{hotNum,jdbcType=INTEGER},
+            #{contributionNum,jdbcType=DECIMAL},
+            #{whetherLock,jdbcType=INTEGER},
+            #{roomPwd,jdbcType=VARCHAR},
+            #{destroyTime,jdbcType=TIMESTAMP},
+            #{createdUserId,jdbcType=INTEGER},
+            #{createdUserName,jdbcType=VARCHAR},
+            <if test="createdTime != null">
+                #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdTime == null">
+                now(),
+            </if>
+            now(),
+            0
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomInfo">
+        update `app_room_info`
+        <set>
+            <if test="roomName != null and roomName != ''" >
+                `room_name`=#{roomName,jdbcType=VARCHAR},
+            </if>
+            <if test="roomType != null" >
+                `room_type`=#{roomType,jdbcType=INTEGER},
+            </if>
+            <if test="roomTypeName != null" >
+                `room_type_name`=#{roomTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="limitUserNum != null" >
+                `limit_user_num`=#{limitUserNum,jdbcType=INTEGER},
+            </if>
+            <if test="roomImg != null" >
+                `room_img`=#{roomImg,jdbcType=VARCHAR},
+            </if>
+            <if test="roomSeq != null" >
+                `room_seq`=#{roomSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="userUpdateSeq != null" >
+                `user_update_seq`=#{userUpdateSeq,jdbcType=INTEGER},
+            </if>
+            <if test="roomLanguage != null" >
+                `room_language`=#{roomLanguage,jdbcType=VARCHAR},
+            </if>
+            <if test="roomCountry != null" >
+                `room_country`=#{roomCountry,jdbcType=VARCHAR},
+            </if>
+            <if test="roomTag != null" >
+                `room_tag`=#{roomTag,jdbcType=VARCHAR},
+            </if>
+            <if test="roomNotice != null">
+                `room_notice`=#{roomNotice,jdbcType=VARCHAR},
+            </if>
+            <if test="micWay != null" >
+                `mic_way`=#{micWay,jdbcType=INTEGER},
+            </if>
+            <if test="roomUserNum != null" >
+                `room_user_num`=#{roomUserNum,jdbcType=INTEGER},
+            </if>
+            <if test="micNum != null" >
+                `mic_num`=#{micNum,jdbcType=INTEGER},
+            </if>
+            <if test="hotNum != null" >
+                `hot_num`=#{hotNum,jdbcType=INTEGER},
+            </if>
+            <if test="contributionNum != null" >
+                `contribution_num`=#{contributionNum,jdbcType=DECIMAL},
+            </if>
+            <if test="whetherLock != null" >
+                `whether_lock`=#{whetherLock,jdbcType=INTEGER},
+            </if>
+            <if test="roomPwd != null" >
+                `room_pwd`=#{roomPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="destroyTime != null" >
+                `destroy_time`=#{destroyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleted != null" >
+                `deleted`=#{deleted,jdbcType=BIT},
+            </if>
+            `modified_time`=now(),
+        </set>
+        where id = #{id}
+    </update>
+    <update id="updateRoomUserNum">
+        update `app_room_info`
+        set room_user_num = (select count(*) from  app_room_account_link where deleted = 0 and room_id = #{roomId})
+        where id = #{roomId}
+    </update>
+
+    <!--房间上锁-->
+    <update id="updateLockRoom">
+        update `app_room_info`
+        set whether_lock = #{whetherLock}, room_pwd = #{roomPwd}
+        where id = #{id}
+    </update>
+
+    <!---->
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.room.RoomInfo">
+        select ri.* from `app_room_info` ri
+        where
+              ri.deleted = 0
+            <if test="likeName != null and likeName != ''">
+                and (ri.room_name like concat('%', #{likeName},'%') or ri.id like concat('%', #{likeName},'%'))
+            </if>
+        order by ri.id desc
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.room.RoomInfo">
+        select * from `app_room_info` where deleted = 0 and id = #{id}
+    </select>
+
+    <!--最近我加入房间列表-->
+    <select id="getMyJoinRoomList" resultType="com.chitchat.portal.vo.room.MyRoomPageListVO">
+        select
+               ri.*
+        from
+            app_room_account_link ral
+            left join `app_room_info` ri on ral.room_id = ri.id
+        where ral.deleted = 0 and ri.deleted = 0
+              and ral.account_id = #{userInfo.id}
+            <if test="likeName != null and likeName != ''">
+                and ri.room_name like concat('%', #{likeName},'%')
+            </if>
+        order by ral.id desc
+    </select>
+
+    <!--我关注的房间列表-->
+    <select id="getMyFollowingList" resultType="com.chitchat.portal.vo.room.MyRoomPageListVO">
+        select
+            ri.*
+        from
+            app_account_follow_link afl
+            left join `app_room_info` ri on afl.target_id = ri.id and afl.follow_type = 2
+        where ri.deleted = 0
+            and afl.account_id = #{userInfo.id}
+            <if test="likeName != null and likeName != ''">
+                and ri.room_name like concat('%', #{likeName},'%')
+            </if>
+            order by ri.hot_num desc,afl.id desc
+    </select>
+
+    <!--搜索房间-->
+    <select id="selectBySearch" resultType="com.chitchat.portal.vo.index.SearchRoomVO">
+        select
+               ri.*
+        from
+             `app_room_info` ri
+        where
+            ri.deleted = 0
+            <if test="likeName != null and likeName != ''">
+                and (ri.room_name like concat('%', #{likeName},'%') or ri.id like concat('%', #{likeName},'%'))
+            </if>
+        order by ri.id desc
+    </select>
+
+    <!--推荐房间列表-->
+    <select id="getPopularRoomList" resultType="com.chitchat.portal.vo.room.MyRoomPageListVO">
+        select
+            ri.*
+        from
+            `app_room_info` ri
+        where ri.deleted = 0
+            <if test="likeName != null and likeName != ''">
+                and ri.room_name like concat('%', #{likeName},'%')
+            </if>
+        order by ri.hot_num desc,ri.id desc
+    </select>
+
+    <!--我的房间信息-->
+    <select id="getMyRoomInfo" resultType="com.chitchat.portal.bean.room.RoomInfo">
+        select
+            ri.*
+        from
+            `app_room_info` ri
+        where ri.deleted = 0
+            and ri.created_user_id = #{accountId}
+        ORDER BY id desc LIMIT 1
+    </select>
+
+    <!--排行榜-->
+    <select id="listRank" resultType="com.chitchat.portal.vo.index.RankVO">
+        select
+            ri.target_id,
+            ri.rank_score
+            <choose>
+                <when test="statType == 1">
+                    ,room.room_name as targetName,
+                    room.room_img as targetImg,
+                    room.room_country as country
+                </when>
+                <otherwise>
+                    ,ai.nick_name as targetName,
+                    ai.gender,ai.country,
+                    ai.icon as targetImg,
+                    ai.account_level_id,
+                    ai.account_game_level_id,
+                    ai.king_level_id,
+                    ai.vip_level_id
+                </otherwise>
+            </choose>
+        from app_rank_info ri
+            <choose>
+                <when test="statType == 1">
+                    left join app_room_info room on room.id = ri.target_id
+                </when>
+                <otherwise>
+                    left join app_account_info ai on ai.id = ri.target_id
+                </otherwise>
+            </choose>
+        where
+            ri.rank_type = #{rankType}
+          and ri.rank_stat_type = #{statType}
+            <choose>
+                <when test="rankType == 1">
+                    and ri.rank_time = date_format(DATE_SUB(now(), INTERVAL 1 DAY),'%Y-%m-%d')
+                </when>
+                <when test="rankType == 2">
+                    and ri.rank_time = YEARWEEK(now()) - 1
+                </when>
+                <otherwise>
+                    and ri.rank_time = date_format(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m')
+                </otherwise>
+            </choose>
+        ORDER BY ri.rank_score DESC
+        limit 99
+    </select>
+</mapper>

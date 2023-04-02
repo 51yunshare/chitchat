@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>chitchat</artifactId>
+        <groupId>com.chitchat</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>chitchat-gateway</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.chitchat</groupId>
+            <artifactId>common-core</artifactId>
+            <exclusions>
+                <!--web 和 gateway有冲突-->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.xiaoymin</groupId>
+                    <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--注册中心客户端-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+
+        <!-- OAuth2资源服务器-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-resource-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.37.0</version>
+
+                <!--全局配置-->
+                <configuration>
+
+                    <!--这一部分是为了实现对远程docker容器的控制-->
+                    <!--docker主机地址,用于完成docker各项功能,注意是tcp不是http!-->
+                    <dockerHost>tcp://${profiles.dockerHost}</dockerHost>
+                    <!--docker远程访问所需证书地址,如果docker远程主机没有启用TLS验证则不需要配证书-->
+<!--                    <certPath>${project.parent.basedir}/docker/ssh</certPath>-->
+
+                    <!--这一部分是为了实现docker镜像的构建和推送-->
+                    <!--registry地址,用于推送,拉取镜像,我这里用的是阿里的registry-->
+<!--                    <pushRegistry>registry.cn-zhangjiakou.aliyuncs.com</pushRegistry>-->
+                    <!--认证配置,用于私有registry认证,如果忘记了可以去阿里的registry查看-->
+                    <authConfig>
+                        <push>
+                            <!-- 仓库用户名/密码 -->
+                            <username>xxxxx</username>
+                            <password>xxxxx</password>
+                        </push>
+                    </authConfig>
+
+                    <!--镜像相关配置,支持多镜像-->
+                    <images>
+                        <!-- 单个镜像配置 -->
+                        <image>
+                            <!--镜像名(含版本号)-->
+                            <name>jshao178/${project.build.finalName}:${project.version}</name>
+                            <!--别名:用于容器命名和在docker-compose.yml文件只能找到对应名字的配置-->
+                            <!--                                <alias>${project.name}</alias>-->
+                            <!--镜像build相关配置-->
+                            <build>
+                                <!--使用dockerFile文件-->
+                                <!--                                    <dockerFile>${project.basedir}/docker/${project.name}</dockerFile>-->
+                                <!--定义基础镜像-->
+                                <from>openjdk:8-jdk-alpine</from>
+                                <args>
+                                    <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                                </args>
+                                <!--定义哪些文件拷贝到容器中-->
+                                <assembly>
+                                    <!--定义拷贝到容器的目录-->
+                                    <targetDir>/</targetDir>
+                                    <!--只拷贝生成的jar包-->
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <entryPoint>
+                                    ["java", "-jar","/${project.build.finalName}.jar","-Xmx2G" ,"-Xms2G","-XX:+UseG1GC","-Xloggc:/data/${project.artifactId}-log/${project.artifactId}-gc-%t.log" ,"-XX:+UseGCLogFileRotation" ,"-XX:NumberOfGCLogFiles=5","-XX:GCLogFileSize=20M" ,"-XX:+PrintGCDetails" ,"-XX:+PrintGCDateStamps" ,"-XX:+PrintGCCause"]
+                                </entryPoint>
+                                <runCmds>
+                                    <run>echo 'Asia/Dubai' >/etc/timezone</run>
+                                    <run>ln -sf /usr/share/zoneinfo/Asia/Dubai /etc/localtime</run>
+                                </runCmds>
+                            </build>
+
+                            <!--配置docker-compose文件-->
+                            <!--                                <external>-->
+                            <!-- <type>compose</type>
+                             <basedir>${project.basedir}/docker</basedir>
+                             <composeFile>docker-compose.yml</composeFile>-->
+                            <!--                                </external>-->
+                            <!--容器run相关配置-->
+                            <run>
+                                <!--配置运行时容器命名策略为:别名,如果不指定则默认为none,即使用随机分配名称-->
+                                <!--                                    <namingStrategy>${project.artifactId}</namingStrategy>-->
+                                <containerNamePattern>${project.build.finalName}</containerNamePattern>
+                                <restartPolicy>
+                                    <name>always</name>
+                                </restartPolicy>
+                                <volumes>
+                                    <bind>
+                                        <volume>/data/${project.build.finalName}:/data/${project.artifactId}-log</volume>
+                                    </bind>
+                                </volumes>
+                                <ports>
+                                    <port>${profiles.serverPort}:80</port>
+                                </ports>
+                                <memory>
+                                    ${profiles.memory}
+                                </memory>
+                                <env>
+                                    <spring.profiles.active>${profiles.active}</spring.profiles.active>
+                                </env>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <dependencies>
+                    <!--该插件需要这个依赖-->
+                    <dependency>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                        <version>1.11</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- 不同环境查找不同配置文件 -->
+    <profiles>
+        <profile>
+            <id>loc</id>
+            <properties>
+                <profiles.active>loc</profiles.active>
+                <maven.test.skip>true</maven.test.skip>
+                <profiles.dockerHost>localhost:2375</profiles.dockerHost>
+                <profiles.serverPort>80</profiles.serverPort>
+                <profiles.memory></profiles.memory>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profiles.active>dev</profiles.active>
+                <maven.test.skip>true</maven.test.skip>
+                <profiles.dockerHost>localhost:2375</profiles.dockerHost>
+                <profiles.serverPort>10100</profiles.serverPort>
+                <profiles.memory>5368709120</profiles.memory>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>prod</id>
+            <properties>
+                <profiles.active>prod</profiles.active>
+                <maven.test.skip>true</maven.test.skip>
+                <scope.jar>provided</scope.jar>
+                <profiles.dockerHost>localhost:2375</profiles.dockerHost>
+                <profiles.serverPort>7000</profiles.serverPort>
+            </properties>
+        </profile>
+
+    </profiles>
+</project>

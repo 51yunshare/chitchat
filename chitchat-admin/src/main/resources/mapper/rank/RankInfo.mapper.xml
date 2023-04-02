@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.RankInfoDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.admin.bean.RankInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="rank_stat_type" jdbcType="INTEGER" property="rankStatType"/>
+        <result column="rank_type" jdbcType="INTEGER" property="rankType"/>
+        <result column="rank_time" jdbcType="VARCHAR" property="rankTime"/>
+        <result column="target_id" jdbcType="BIGINT" property="targetId"/>
+        <result column="rank_score" jdbcType="BIGINT" property="rankScore"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, rank_stat_type, rank_type, rank_time, target_id, rank_score, created_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select *
+        from app_rank_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select *
+        from app_rank_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete
+        from app_rank_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.chitchat.admin.bean.RankInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_rank_info (rank_stat_type, rank_type, rank_time,
+        target_id, rank_score, created_time
+        )
+        values (#{rankStatType,jdbcType=INTEGER}, #{rankType,jdbcType=INTEGER}, #{rankTime,jdbcType=VARCHAR},
+        #{targetId,jdbcType=BIGINT}, #{rankScore,jdbcType=BIGINT}, now()
+        )
+    </insert>
+
+    <!--排行榜统计-->
+    <insert id="insertStat">
+        <if test="statType != null and rankType != null">
+            insert into app_rank_info (rank_stat_type, rank_type, rank_time,
+            target_id, rank_score, created_time
+            )
+            SELECT
+                #{statType} as rank_stat_type,
+                #{rankType} as rank_type,
+            <choose>
+                <when test="rankType == 1">
+                    date_format(DATE_SUB(now(), INTERVAL 1 DAY),'%Y-%m-%d') as rank_time,
+                </when>
+                <when test="rankType == 2">
+                    YEARWEEK(now(),1) - 1 as rank_time,
+                </when>
+                <otherwise>
+                    date_format(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m') as rank_time,
+                </otherwise>
+            </choose>
+                <choose>
+                    <when test="statType == 1">
+                        room_id as target_id,
+                    </when>
+                    <when test="statType == 2">
+                        account_id as target_id,
+                    </when>
+                    <otherwise>
+                        target_id,
+                    </otherwise>
+                </choose>
+                sum(gift_price*gift_num) as rank_score,
+                now() as created_time
+            FROM
+                app_account_gift_link
+            WHERE 1 =1
+                <choose>
+                    <when test="rankType == 1">
+                        and to_days(now()) - to_days(created_time) = 1
+                    </when>
+                    <when test="rankType == 2">
+                        and YEARWEEK(date_format(created_time,'%Y-%m-%d'),1) = YEARWEEK(now(),1) - 1
+                    </when>
+                    <otherwise>
+                        and date_format(created_time,'%Y-%m') = date_format(DATE_SUB(now(), INTERVAL 1 MONTH),'%Y-%m')
+                    </otherwise>
+                </choose>
+            GROUP BY rank_time <choose><when test="statType == 1">,room_id</when><when test="statType == 2">,account_id</when><otherwise>,target_id</otherwise></choose>
+            ORDER BY rank_score desc
+        </if>
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.RankInfo">
+        update app_rank_info
+        <set>
+            <if test="rankStatType != null">
+                rank_stat_type = #{rankStatType,jdbcType=INTEGER},
+            </if>
+            <if test="rankType != null">
+                rank_type = #{rankType,jdbcType=INTEGER},
+            </if>
+            <if test="rankTime != null">
+                rank_time = #{rankTime,jdbcType=VARCHAR},
+            </if>
+            <if test="targetId != null">
+                target_id = #{targetId,jdbcType=BIGINT},
+            </if>
+            <if test="rankScore != null">
+                rank_score = #{rankScore,jdbcType=BIGINT},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="update" parameterType="com.chitchat.admin.bean.RankInfo">
+        update app_rank_info
+        set rank_stat_type = #{rankStatType,jdbcType=INTEGER},
+            rank_type      = #{rankType,jdbcType=INTEGER},
+            rank_time      = #{rankTime,jdbcType=VARCHAR},
+            target_id      = #{targetId,jdbcType=BIGINT},
+            rank_score     = #{rankScore,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

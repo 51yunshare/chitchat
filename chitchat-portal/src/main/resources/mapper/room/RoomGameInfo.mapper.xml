@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomGameInfoDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomGameInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="room_no" jdbcType="VARCHAR" property="roomNo" />
+    <result column="game_type" jdbcType="INTEGER" property="gameType" />
+    <result column="room_user_num" jdbcType="INTEGER" property="roomUserNum" />
+    <result column="game_user_num" jdbcType="INTEGER" property="gameUserNum" />
+    <result column="limit_user_num" jdbcType="INTEGER" property="limitUserNum" />
+    <result column="destroy_time" jdbcType="TIMESTAMP" property="destroyTime" />
+    <result column="game_rules" jdbcType="OTHER" property="gameRules" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, room_no, room_type, room_user_num, game_user_num, limit_user_num, destroy_time, game_rules, creator, modified_time,
+    created_time, deleted
+  </sql>
+
+  <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomGameInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_room_game_info (room_no, game_type, room_user_num, game_user_num,
+    limit_user_num, destroy_time, creator,
+    modified_time, created_time, deleted,
+    game_rules)
+    values (#{roomNo,jdbcType=VARCHAR}, #{gameType,jdbcType=INTEGER}, #{roomUserNum,jdbcType=INTEGER}, #{gameUserNum,jdbcType=INTEGER},
+    #{limitUserNum,jdbcType=INTEGER}, #{destroyTime,jdbcType=TIMESTAMP}, #{creator,jdbcType=VARCHAR},
+    now(), now(), 0, #{gameRules,jdbcType=OTHER})
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomGameInfo">
+    update app_room_game_info
+    <set>
+      <if test="roomNo != null">
+        room_no = #{roomNo,jdbcType=VARCHAR},
+      </if>
+      <if test="gameType != null">
+        game_type = #{gameType,jdbcType=INTEGER},
+      </if>
+      <if test="roomUserNum != null">
+        room_user_num = #{roomUserNum,jdbcType=INTEGER},
+      </if>
+      <if test="gameUserNum != null">
+        game_user_num = #{gameUserNum,jdbcType=INTEGER},
+      </if>
+      <if test="limitUserNum != null">
+        limit_user_num = #{limitUserNum,jdbcType=INTEGER},
+      </if>
+      <if test="destroyTime != null">
+        destroy_time = #{destroyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="gameRules != null">
+        game_rules = #{gameRules,jdbcType=OTHER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.chitchat.portal.bean.room.RoomGameInfo">
+    update app_room_game_info
+    set room_no = #{roomNo,jdbcType=VARCHAR},
+        game_type = #{gameType,jdbcType=INTEGER},
+        room_user_num = #{roomUserNum,jdbcType=INTEGER},
+        game_user_num = #{gameUserNum,jdbcType=INTEGER},
+        limit_user_num = #{limitUserNum,jdbcType=INTEGER},
+        destroy_time = #{destroyTime,jdbcType=TIMESTAMP},
+        game_rules = #{gameRules,jdbcType=OTHER},
+        creator = #{creator,jdbcType=VARCHAR},
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+        deleted = #{deleted,jdbcType=INTEGER},
+        modified_time = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select
+           ri.*
+    from `app_room_game_info` ri
+    where
+        ri.deleted = 0
+    order by ri.id desc
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select *
+    from app_room_game_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select *
+    from app_room_game_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <!-- 获取游戏房间信息 -->
+  <select id="getList" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select
+      ri.*
+    from `app_room_game_info` ri
+    where
+      ri.deleted = 0
+      <if test="gameType != null">
+        and ri.game_type = #{gameType}
+      </if>
+      <if test="gameUserNum != null">
+        and ri.game_user_num = #{gameUserNum}
+        and ri.game_user_num > ri.room_user_num
+      </if>
+  </select>
+
+  <!--通过房间号获取游戏房间信息-->
+  <select id="getByRoomNo" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select *
+    from app_room_game_info
+    where deleted = 0 and room_no = #{roomNo}
+  </select>
+
+  <!--获取空闲的游戏房间-->
+  <select id="getFreeGameInfo" resultType="com.chitchat.portal.bean.room.RoomGameInfo">
+    select
+        ri.*
+    from `app_room_game_info` ri
+    where
+      ri.deleted = 0
+      and ri.game_type = #{gameType}
+      and ri.game_user_num = #{gameUserNum}
+      and ri.game_user_num > ri.room_user_num
+    order by ri.id asc limit 1
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_room_game_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+</mapper>

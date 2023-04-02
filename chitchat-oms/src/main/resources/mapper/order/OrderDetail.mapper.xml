@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.oms.dao.OrderDetailDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.oms.bean.OrderDetail">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="goods_img" jdbcType="VARCHAR" property="goodsCover" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice" />
+    <result column="goods_quantity" jdbcType="INTEGER" property="goodsNum" />
+    <result column="total_amount" jdbcType="DECIMAL" property="totalAmount" />
+    <result column="goods_category_id" jdbcType="BIGINT" property="goodsCategoryId" />
+    <result column="goods_category_name" jdbcType="VARCHAR" property="goodsCategoryName" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, order_id, order_sn, goods_id, goods_cover, goods_name, goods_price, goods_num,
+    total_amount, goods_category_id, goods_category_name, deleted, modified_time, created_time
+  </sql>
+
+  <insert id="insert" parameterType="com.chitchat.oms.bean.OrderDetail">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_order_detail (order_id, order_sn, goods_id,
+    goods_cover, goods_name, goods_price,
+    goods_num, total_amount, goods_category_id,
+    goods_category_name, deleted, modified_time,
+    created_time)
+    values (#{orderId,jdbcType=BIGINT}, #{orderSn,jdbcType=VARCHAR}, #{goodsId,jdbcType=BIGINT},
+    #{goodsCover,jdbcType=VARCHAR}, #{goodsName,jdbcType=VARCHAR}, #{goodsPrice,jdbcType=DECIMAL},
+    #{goodsNum,jdbcType=INTEGER}, #{totalAmount,jdbcType=DECIMAL}, #{goodsCategoryId,jdbcType=BIGINT},
+    #{goodsCategoryName,jdbcType=VARCHAR}, 0, now(),
+    now())
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.oms.bean.OrderDetail">
+    update app_order_detail
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null">
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsCover != null">
+        goods_cover = #{goodsCover,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsName != null">
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsPrice != null">
+        goods_price = #{goodsPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsNum != null">
+        goods_num = #{goodsNum,jdbcType=INTEGER},
+      </if>
+      <if test="totalAmount != null">
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="goodsCategoryId != null">
+        goods_category_id = #{goodsCategoryId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsCategoryName != null">
+        goods_category_name = #{goodsCategoryName,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      modified_time = now(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update" parameterType="com.chitchat.oms.bean.OrderDetail">
+    update app_order_detail
+    set order_id = #{orderId,jdbcType=BIGINT},
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+        goods_id = #{goodsId,jdbcType=BIGINT},
+        goods_cover = #{goodsCover,jdbcType=VARCHAR},
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+        goods_price = #{goodsPrice,jdbcType=DECIMAL},
+        goods_num = #{goodsNum,jdbcType=INTEGER},
+        total_amount = #{totalAmount,jdbcType=DECIMAL},
+        goods_category_id = #{goodsCategoryId,jdbcType=BIGINT},
+        goods_category_name = #{goodsCategoryName,jdbcType=VARCHAR},
+        deleted = #{deleted,jdbcType=INTEGER},
+        modified_time = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.oms.bean.OrderDetail">
+    select *
+    from app_order_detail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_order_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+</mapper>

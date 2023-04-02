@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountFollowLinkDaoI">
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountFollowLink">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_account_follow_link` (
+            follow_type,
+            target_id,
+            account_id,
+            follow_status,
+            friend,
+            created_time,
+            modified_time
+        ) values (
+            #{followType,jdbcType=INTEGER},
+            #{targetId,jdbcType=BIGINT},
+            #{accountId,jdbcType=BIGINT},
+            #{followStatus,jdbcType=INTEGER},
+            #{friend,jdbcType=INTEGER},
+            now(),
+            now()
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountFollowLink">
+        update `app_account_follow_link`
+        <set>
+            <if test="followType != null" >
+                follow_type = #{followType,jdbcType=INTEGER},
+            </if>
+            <if test="targetId != null" >
+                target_id = #{targetId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null" >
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="followStatus != null" >
+                follow_status = #{followStatus,jdbcType=INTEGER},
+            </if>
+            <if test="friend != null" >
+                friend = #{friend,jdbcType=INTEGER},
+            </if>
+            modified_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultType="com.chitchat.portal.bean.account.AccountFollowLink" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select
+            *
+        from `app_account_follow_link`
+            order by id desc
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete
+        from app_account_follow_link
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!--我关注列表-->
+    <select id="getFollowingList" resultType="com.chitchat.portal.vo.account.AccountFollowLinkVO">
+        select
+            afl.follow_status,
+            ai.id as account_id,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from
+             `app_account_follow_link` afl
+            left join app_account_info ai on ai.id = afl.target_id
+        where afl.follow_status = 1
+            and afl.follow_type = 1
+            <if test="targetId != null">
+                and afl.target_id = #{targetId}
+            </if>
+            <if test="accountId != null">
+                and afl.account_id = #{accountId}
+            </if>
+        order by afl.id desc
+    </select>
+    <!--我的粉丝-->
+    <select id="getFollowerList" resultType="com.chitchat.portal.vo.account.AccountFollowLinkVO">
+        select
+            afl.*,
+            ai.id as account_id,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from
+            `app_account_follow_link` afl
+            left join app_account_info ai on ai.id = afl.account_id
+        where
+              afl.follow_type = 1
+            <if test="targetId != null">
+                and afl.target_id = #{targetId}
+            </if>
+            <if test="accountId != null">
+                and afl.account_id = #{accountId}
+            </if>
+        order by afl.id desc
+    </select>
+
+    <!--判断用户关注信息-->
+    <select id="getFollowByTargetIdAndAccountId"
+            resultType="com.chitchat.portal.bean.account.AccountFollowLink">
+        select *
+        from app_account_follow_link afl
+        where afl.follow_type = #{followType} and afl.target_id = #{targetId}
+          and afl.account_id = #{accountId}
+    </select>
+
+</mapper>

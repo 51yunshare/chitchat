@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.guild.GuildInfoDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.guild.GuildInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="guild_name" jdbcType="VARCHAR" property="guildName" />
+    <result column="guild_icon" jdbcType="VARCHAR" property="guildIcon" />
+    <result column="guild_notice" jdbcType="VARCHAR" property="guildNotice" />
+    <result column="created_user_id" jdbcType="BIGINT" property="createdUserId" />
+    <result column="created_user_name" jdbcType="VARCHAR" property="createdUserName" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+
+  <insert id="insert" parameterType="com.chitchat.portal.bean.guild.GuildInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_guild_info (guild_name, guild_icon, guild_notice,
+    created_user_id, created_user_name, deleted,
+    modified_time, created_time)
+    values (#{guildName,jdbcType=VARCHAR}, #{guildIcon,jdbcType=VARCHAR}, #{guildNotice,jdbcType=VARCHAR},
+    #{createdUserId,jdbcType=BIGINT}, #{createdUserName,jdbcType=VARCHAR}, #{deleted,jdbcType=INTEGER},
+    #{modifiedTime,jdbcType=TIMESTAMP}, now())
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.chitchat.portal.bean.guild.GuildInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_guild_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="guildName != null">
+        guild_name,
+      </if>
+      <if test="guildIcon != null">
+        guild_icon,
+      </if>
+      <if test="guildNotice != null">
+        guild_notice,
+      </if>
+      <if test="createdUserId != null">
+        created_user_id,
+      </if>
+      <if test="createdUserName != null">
+        created_user_name,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="modifiedTime != null">
+        modified_time,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="guildName != null">
+        #{guildName,jdbcType=VARCHAR},
+      </if>
+      <if test="guildIcon != null">
+        #{guildIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="guildNotice != null">
+        #{guildNotice,jdbcType=VARCHAR},
+      </if>
+      <if test="createdUserId != null">
+        #{createdUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createdUserName != null">
+        #{createdUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="modifiedTime != null">
+        #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.guild.GuildInfo">
+    update app_guild_info
+    <set>
+      <if test="guildName != null">
+        guild_name = #{guildName,jdbcType=VARCHAR},
+      </if>
+      <if test="guildIcon != null">
+        guild_icon = #{guildIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="guildNotice != null">
+        guild_notice = #{guildNotice,jdbcType=VARCHAR},
+      </if>
+      <if test="createdUserId != null">
+        created_user_id = #{createdUserId,jdbcType=BIGINT},
+      </if>
+      <if test="createdUserName != null">
+        created_user_name = #{createdUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update" parameterType="com.chitchat.portal.bean.guild.GuildInfo">
+    update app_guild_info
+    set guild_name = #{guildName,jdbcType=VARCHAR},
+        guild_icon = #{guildIcon,jdbcType=VARCHAR},
+        guild_notice = #{guildNotice,jdbcType=VARCHAR},
+        created_user_id = #{createdUserId,jdbcType=BIGINT},
+        created_user_name = #{createdUserName,jdbcType=VARCHAR},
+        deleted = #{deleted,jdbcType=INTEGER},
+        modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+        created_time = #{createdTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <sql id="Base_Column_List">
+    id, guild_name, guild_icon, guild_notice, created_user_id, created_user_name, deleted,
+    modified_time, created_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.guild.GuildInfo">
+    select *
+    from app_guild_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.guild.GuildInfo">
+    select *
+    from app_guild_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_guild_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+</mapper>

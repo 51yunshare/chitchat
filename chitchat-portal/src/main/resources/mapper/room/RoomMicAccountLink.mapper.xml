@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomMicAccountLinkDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomMicAccountLink">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_room_mic_account_link` (
+            room_id,
+            room_account_link_id,
+            account_id,
+            mic_id,
+            account_mic_status,
+            mute_mic_status,
+            off_mic_time,
+            off_mic_operator_id,
+            off_mic_operator_name,
+            deleted,
+            created_time
+        ) values (
+            #{roomId,jdbcType=BIGINT},
+            #{roomAccountLinkId,jdbcType=BIGINT},
+            #{accountId,jdbcType=BIGINT},
+            #{micId,jdbcType=INTEGER},
+            #{accountMicStatus,jdbcType=INTEGER},
+            #{muteMicStatus,jdbcType=INTEGER},
+            #{offMicTime,jdbcType=TIMESTAMP},
+            #{offMicOperatorId,jdbcType=BIGINT},
+            #{offMicOperatorName,jdbcType=VARCHAR},
+            0,
+            now()
+        )
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomMicAccountLink">
+        update `app_room_mic_account_link`
+        <set>
+            <if test="roomId != null" >
+                `room_id`=#{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="roomAccountLinkId != null" >
+                `room_account_link_id`=#{roomAccountLinkId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null" >
+                `account_id`=#{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="micId != null" >
+                `mic_id`=#{micId,jdbcType=INTEGER},
+            </if>
+            <if test="accountMicStatus != null" >
+                `account_mic_status`=#{accountMicStatus,jdbcType=INTEGER},
+            </if>
+            <if test="muteMicStatus != null" >
+                `mute_mic_status`=#{muteMicStatus,jdbcType=INTEGER},
+            </if>
+            <if test="offMicTime != null" >
+                `off_mic_time`=#{offMicTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offMicOperatorId != null" >
+                off_mic_operator_id = #{offMicOperatorId,jdbcType=BIGINT},
+            </if>
+            <if test="offMicOperatorName != null" >
+                off_mic_operator_name = #{offMicOperatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null" >
+                `deleted`=#{deleted,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--麦上用户列表-->
+    <select id="getList" resultType="com.chitchat.portal.vo.room.RoomAccountLinkVO" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select
+            mal.room_id,
+            mal.account_id,
+            aral.user_role,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from
+             app_room_mic_account_link mal
+            left join app_room_account_link aral on mal.room_account_link_id = aral.id
+            left join app_account_info ai on mal.account_id = ai.id
+        where mal.room_id = #{roomId} and mal.deleted = 0 and aral.deleted = 0
+    </select>
+
+    <!--用户id和房间id查询用户上麦信息-->
+    <select id="getByRoomIdAndAccountId" resultType="com.chitchat.portal.bean.room.RoomMicAccountLink">
+        select *
+        from app_room_mic_account_link armal
+        where armal.deleted = 0
+          and armal.room_id = #{roomId}
+          and armal.account_id = #{accountId}
+    </select>
+
+    <!--删除用户上麦信息-->
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete from app_room_mic_account_link
+        where id = #{id,jdbcType=BIGINT}
+
+    </delete>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.ActivityInfoDaoI">
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.chitchat.admin.bean.ActivityInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `sys_base_activity_info` (
+            type,
+            title,
+            pic_url,
+            activity_url,
+            activity_content,
+            start_time,
+            end_time,
+            sort,
+            start_status,
+            memo,
+            created_time
+        ) values (
+            #{type,jdbcType=INTEGER},
+            #{title,jdbcType=VARCHAR},
+            #{picUrl,jdbcType=VARCHAR},
+            #{activityUrl,jdbcType=VARCHAR},
+            #{activityContent,jdbcType=VARCHAR},
+            #{startTime,jdbcType=TIMESTAMP},
+            #{endTime,jdbcType=TIMESTAMP},
+            #{sort,jdbcType=INTEGER},
+            #{startStatus,jdbcType=INTEGER},
+            #{memo,jdbcType=VARCHAR},
+            now()
+        )
+    </insert>
+
+    <select id="list" resultType="com.chitchat.admin.bean.ActivityInfo" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select *
+        from `sys_base_activity_info`
+        where
+            1=1
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        order by sort asc ,id desc
+    </select>
+
+    <select id="getById" resultType="com.chitchat.admin.bean.ActivityInfo" parameterType="java.lang.Long">
+        select *
+        from `sys_base_activity_info`
+        where id =#{id}
+    </select>
+</mapper>

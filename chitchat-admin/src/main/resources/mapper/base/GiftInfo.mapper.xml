@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.GiftInfoDaoI">
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.chitchat.admin.bean.GiftInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `sys_base_gift_info` (
+            gift_type,
+            gift_type_name,
+            gift_name,
+            gift_icon,
+            gift_price,
+            gift_effect_url,
+            memo,
+            created_time
+        ) values (
+            #{giftType,jdbcType=BIGINT},
+            #{giftTypeName,jdbcType=VARCHAR},
+            #{giftName,jdbcType=VARCHAR},
+            #{giftIcon,jdbcType=VARCHAR},
+            #{giftPrice,jdbcType=DECIMAL},
+            #{giftEffectUrl,jdbcType=VARCHAR},
+            #{memo,jdbcType=VARCHAR},
+            now()
+        )
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.GiftInfo">
+        update sys_base_gift_info
+        <set>
+            <if test="giftType != null">
+                gift_type = #{giftType,jdbcType=BIGINT},
+            </if>
+            <if test="giftTypeName != null">
+                gift_type_name = #{giftTypeName,jdbcType=VARCHAR},
+            </if>
+            <if test="giftName != null">
+                gift_name = #{giftName,jdbcType=VARCHAR},
+            </if>
+            <if test="giftIcon != null">
+                gift_icon = #{giftIcon,jdbcType=VARCHAR},
+            </if>
+            <if test="giftPrice != null">
+                gift_price = #{giftPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="giftEffectUrl != null">
+                gift_effect_url = #{giftEffectUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="list" resultType="com.chitchat.admin.bean.GiftInfo" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select *
+        from `sys_base_gift_info`
+        where 1=1
+            <if test="giftType != null">
+                and gift_type = #{giftType}
+            </if>
+        order by id desc
+    </select>
+
+    <select id="getById" resultType="com.chitchat.admin.bean.GiftInfo" parameterType="java.lang.Long">
+        select *
+        from `sys_base_gift_info`
+        where id =#{id}
+    </select>
+</mapper>

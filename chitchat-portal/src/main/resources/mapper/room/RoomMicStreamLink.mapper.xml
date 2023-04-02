@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomMicStreamLinkDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="room_id" jdbcType="BIGINT" property="roomId" />
+    <result column="mic_id" jdbcType="BIGINT" property="micId" />
+    <result column="account_id" jdbcType="BIGINT" property="accountId" />
+    <result column="publish_channel" jdbcType="INTEGER" property="publishChannel" />
+    <result column="audio_bitrate" jdbcType="INTEGER" property="audioBitrate" />
+    <result column="codec" jdbcType="VARCHAR" property="codec" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, room_id, mic_id, publish_channel, audio_bitrate, codec, created_time
+  </sql>
+  <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_room_mic_stream_link (room_id, mic_id, account_id, publish_channel,
+    audio_bitrate, codec, created_time
+    )
+    values (#{roomId,jdbcType=BIGINT}, #{micId,jdbcType=BIGINT}, #{accountId,jdbcType=BIGINT}, #{publishChannel,jdbcType=INTEGER},
+    #{audioBitrate,jdbcType=INTEGER}, #{codec,jdbcType=VARCHAR}, now()
+    )
+  </insert>
+  <insert id="insertSelective" parameterType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_room_mic_stream_link
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roomId != null">
+        room_id,
+      </if>
+      <if test="micId != null">
+        mic_id,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="publishChannel != null">
+        publish_channel,
+      </if>
+      <if test="audioBitrate != null">
+        audio_bitrate,
+      </if>
+      <if test="codec != null">
+        codec,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roomId != null">
+        #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="micId != null">
+        #{micId,jdbcType=BIGINT},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="publishChannel != null">
+        #{publishChannel,jdbcType=INTEGER},
+      </if>
+      <if test="audioBitrate != null">
+        #{audioBitrate,jdbcType=INTEGER},
+      </if>
+      <if test="codec != null">
+        #{codec,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    update app_room_mic_stream_link
+    <set>
+      <if test="roomId != null">
+        room_id = #{roomId,jdbcType=BIGINT},
+      </if>
+      <if test="micId != null">
+        mic_id = #{micId,jdbcType=BIGINT},
+      </if>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="publishChannel != null">
+        publish_channel = #{publishChannel,jdbcType=INTEGER},
+      </if>
+      <if test="audioBitrate != null">
+        audio_bitrate = #{audioBitrate,jdbcType=INTEGER},
+      </if>
+      <if test="codec != null">
+        codec = #{codec,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    update app_room_mic_stream_link
+    set room_id = #{roomId,jdbcType=BIGINT},
+        mic_id = #{micId,jdbcType=BIGINT},
+        account_id = #{accountId,jdbcType=BIGINT},
+        publish_channel = #{publishChannel,jdbcType=INTEGER},
+        audio_bitrate = #{audioBitrate,jdbcType=INTEGER},
+        codec = #{codec,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    select *
+    from app_room_mic_stream_link
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.room.RoomMicStreamLink">
+    select *
+    from app_room_mic_stream_link
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_room_mic_stream_link
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!--删除麦位流信息-通过房间id、麦位id和用户id-->
+  <delete id="deletedByRoomIdAndMicIdAndAccountId">
+    delete from app_room_mic_stream_link where room_id = #{roomId} and  mic_id = #{micId} and account_id = #{accountId}
+  </delete>
+
+</mapper>

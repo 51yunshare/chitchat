@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.guild.GuildApplyInfoDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="account_id" jdbcType="BIGINT" property="accountId" />
+    <result column="apply_status" jdbcType="INTEGER" property="applyStatus" />
+    <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+    <result column="operate_user_id" jdbcType="BIGINT" property="operateUserId" />
+    <result column="operate_user_name" jdbcType="VARCHAR" property="operateUserName" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_guild_apply_info (type, account_id, apply_status,
+    operate_time, operate_user_id, operate_user_name,
+    created_time)
+    values (#{type,jdbcType=INTEGER}, #{accountId,jdbcType=BIGINT}, #{applyStatus,jdbcType=INTEGER},
+    #{operateTime,jdbcType=TIMESTAMP}, #{operateUserId,jdbcType=BIGINT}, #{operateUserName,jdbcType=VARCHAR},
+    #{createdTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_guild_apply_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        type,
+      </if>
+      <if test="accountId != null">
+        account_id,
+      </if>
+      <if test="applyStatus != null">
+        apply_status,
+      </if>
+      <if test="operateTime != null">
+        operate_time,
+      </if>
+      <if test="operateUserId != null">
+        operate_user_id,
+      </if>
+      <if test="operateUserName != null">
+        operate_user_name,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null">
+        #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="applyStatus != null">
+        #{applyStatus,jdbcType=INTEGER},
+      </if>
+      <if test="operateTime != null">
+        #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateUserId != null">
+        #{operateUserId,jdbcType=BIGINT},
+      </if>
+      <if test="operateUserName != null">
+        #{operateUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    update app_guild_apply_info
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="accountId != null">
+        account_id = #{accountId,jdbcType=BIGINT},
+      </if>
+      <if test="applyStatus != null">
+        apply_status = #{applyStatus,jdbcType=INTEGER},
+      </if>
+      <if test="operateTime != null">
+        operate_time = #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateUserId != null">
+        operate_user_id = #{operateUserId,jdbcType=BIGINT},
+      </if>
+      <if test="operateUserName != null">
+        operate_user_name = #{operateUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    update app_guild_apply_info
+    set type = #{type,jdbcType=INTEGER},
+        account_id = #{accountId,jdbcType=BIGINT},
+        apply_status = #{applyStatus,jdbcType=INTEGER},
+        operate_time = #{operateTime,jdbcType=TIMESTAMP},
+        operate_user_id = #{operateUserId,jdbcType=BIGINT},
+        operate_user_name = #{operateUserName,jdbcType=VARCHAR},
+        created_time = #{createdTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <sql id="Base_Column_List">
+    id, type, account_id, apply_status, operate_time, operate_user_id, operate_user_name,
+    created_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    select
+    <include refid="Base_Column_List" />
+    from app_guild_apply_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.guild.GuildApplyInfo">
+    select
+    <include refid="Base_Column_List" />
+    from app_guild_apply_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_guild_apply_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+</mapper>

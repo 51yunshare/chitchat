@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountExpFlowLogDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="exp_type" jdbcType="INTEGER" property="expType"/>
+        <result column="change_type" jdbcType="INTEGER" property="changeType"/>
+        <result column="exp_multiplier" jdbcType="INTEGER" property="expMultiplier"/>
+        <result column="change_count" jdbcType="INTEGER" property="changeCount"/>
+        <result column="source_type" jdbcType="INTEGER" property="sourceType"/>
+        <result column="exp_date" jdbcType="TIMESTAMP" property="expDate"/>
+        <result column="created_user" jdbcType="VARCHAR" property="createdUser"/>
+        <result column="operate_note" jdbcType="VARCHAR" property="operateNote"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, account_id, exp_type, change_type, exp_multiplier, change_count, source_type, exp_date, created_user, operate_note,
+    created_time
+    </sql>
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_account_exp_flow_log (account_id, exp_type, change_type,
+        exp_multiplier, change_count, source_type, exp_date, created_user,
+        operate_note, created_time)
+        values (#{accountId,jdbcType=BIGINT}, #{expType,jdbcType=INTEGER}, #{changeType,jdbcType=INTEGER},
+        #{expMultiplier,jdbcType=INTEGER}, #{changeCount,jdbcType=INTEGER}, #{sourceType,jdbcType=INTEGER},
+        #{expDate,jdbcType=TIMESTAMP}, #{createdUser,jdbcType=VARCHAR},#{operateNote,jdbcType=VARCHAR}, now())
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        update app_account_exp_flow_log
+        <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="expType != null">
+                exp_type = #{expType,jdbcType=INTEGER},
+            </if>
+            <if test="changeType != null">
+                change_type = #{changeType,jdbcType=INTEGER},
+            </if>
+            <if test="expMultiplier != null">
+                exp_multiplier = #{expMultiplier,jdbcType=INTEGER},
+            </if>
+            <if test="changeCount != null">
+                change_count = #{changeCount,jdbcType=INTEGER},
+            </if>
+            <if test="sourceType != null">
+                source_type = #{sourceType,jdbcType=INTEGER},
+            </if>
+            <if test="expDate != null">
+                exp_date = #{expDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdUser != null">
+                created_user = #{createdUser,jdbcType=VARCHAR},
+            </if>
+            <if test="operateNote != null">
+                operate_note = #{operateNote,jdbcType=VARCHAR},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="update" parameterType="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        update app_account_exp_flow_log
+        set account_id   = #{accountId,jdbcType=BIGINT},
+            exp_type     = #{expType,jdbcType=INTEGER},
+            change_type  = #{changeType,jdbcType=INTEGER},
+            exp_multiplier = #{expMultiplier,jdbcType=INTEGER},
+            change_count = #{changeCount,jdbcType=INTEGER},
+            source_type  = #{sourceType,jdbcType=INTEGER},
+            exp_date = #{expDate,jdbcType=TIMESTAMP},
+            created_user = #{createdUser,jdbcType=VARCHAR},
+            operate_note = #{operateNote,jdbcType=VARCHAR},
+            created_time = #{createdTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultType="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        select *
+        from app_account_exp_flow_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.AccountExpFlowLog">
+        select *
+        from app_account_exp_flow_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--获取当天总的金币数/分钟数-->
+    <select id="getCoinsSumTheDay" resultType="java.lang.Integer">
+        select ifnull(sum(exp_multiplier),0)
+        from app_account_exp_flow_log
+        where account_id = #{accountId}
+          and exp_type = #{levelType}
+          and source_type = #{sourceType}
+          and date_format(exp_date,'%Y-%m-%d') = #{today}
+    </select>
+
+</mapper>

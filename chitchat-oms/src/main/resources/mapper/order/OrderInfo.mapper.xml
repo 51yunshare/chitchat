@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.oms.dao.OrderDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.oms.bean.OrderInfo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+        <result column="account_id" jdbcType="BIGINT" property="accountId" />
+        <result column="total_amount" jdbcType="DECIMAL" property="totalAmount" />
+        <result column="pay_amount" jdbcType="DECIMAL" property="payAmount" />
+        <result column="total_num" jdbcType="INTEGER" property="totalNum" />
+        <result column="order_status" jdbcType="INTEGER" property="orderStatus" />
+        <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+        <result column="pay_type" jdbcType="INTEGER" property="payType" />
+        <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
+        <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
+        <result column="out_refund_no" jdbcType="VARCHAR" property="outRefundNo" />
+        <result column="refund_id" jdbcType="VARCHAR" property="refundId" />
+        <result column="memo" jdbcType="VARCHAR" property="memo" />
+        <result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime" />
+        <result column="delivery_time" jdbcType="TIMESTAMP" property="deliveryTime" />
+        <result column="receive_time" jdbcType="TIMESTAMP" property="receiveTime" />
+        <result column="deleted" jdbcType="INTEGER" property="deleted" />
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <insert id="insert" parameterType="com.chitchat.oms.bean.OrderInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_order_info (order_sn, account_id, total_amount,
+        pay_amount, total_num, order_status,
+        source_type, pay_type, out_trade_no,
+        transaction_id, out_refund_no, refund_id,
+        memo, payment_time,
+        delivery_time, receive_time, deleted,
+        modified_time, create_time)
+        values (#{orderSn,jdbcType=VARCHAR}, #{accountId,jdbcType=BIGINT}, #{totalAmount,jdbcType=DECIMAL},
+        #{payAmount,jdbcType=DECIMAL}, #{totalNum,jdbcType=INTEGER}, #{orderStatus,jdbcType=INTEGER},
+        #{sourceType,jdbcType=INTEGER}, #{payType,jdbcType=INTEGER}, #{outTradeNo,jdbcType=VARCHAR},
+        #{transactionId,jdbcType=VARCHAR}, #{outRefundNo,jdbcType=VARCHAR}, #{refundId,jdbcType=VARCHAR},
+        #{memo,jdbcType=VARCHAR}, #{paymentTime,jdbcType=TIMESTAMP},
+        #{deliveryTime,jdbcType=TIMESTAMP}, #{receiveTime,jdbcType=TIMESTAMP}, 0,
+        now(), now())
+    </insert>
+
+    <update id="update" parameterType="com.chitchat.oms.bean.OrderInfo">
+        update app_order_info
+        set order_sn = #{orderSn,jdbcType=VARCHAR},
+            account_id = #{accountId,jdbcType=BIGINT},
+            total_amount = #{totalAmount,jdbcType=DECIMAL},
+            pay_amount = #{payAmount,jdbcType=DECIMAL},
+            total_num = #{totalNum,jdbcType=INTEGER},
+            order_status = #{orderStatus,jdbcType=INTEGER},
+            source_type = #{sourceType,jdbcType=INTEGER},
+            pay_type = #{payType,jdbcType=INTEGER},
+            out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+            transaction_id = #{transactionId,jdbcType=VARCHAR},
+            out_refund_no = #{outRefundNo,jdbcType=VARCHAR},
+            refund_id = #{refundId,jdbcType=VARCHAR},
+            memo = #{memo,jdbcType=VARCHAR},
+            payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+            delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+            receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+            deleted = #{deleted,jdbcType=INTEGER},
+            modified_time = now()
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.oms.bean.OrderInfo">
+        update app_order_info
+        <set>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="totalAmount != null">
+                total_amount = #{totalAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="payAmount != null">
+                pay_amount = #{payAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="totalNum != null">
+                total_num = #{totalNum,jdbcType=INTEGER},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=INTEGER},
+            </if>
+            <if test="sourceType != null">
+                source_type = #{sourceType,jdbcType=INTEGER},
+            </if>
+            <if test="payType != null">
+                pay_type = #{payType,jdbcType=INTEGER},
+            </if>
+            <if test="outTradeNo != null">
+                out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="transactionId != null">
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="outRefundNo != null">
+                out_refund_no = #{outRefundNo,jdbcType=VARCHAR},
+            </if>
+            <if test="refundId != null">
+                refund_id = #{refundId,jdbcType=VARCHAR},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+            <if test="paymentTime != null">
+                payment_time = #{paymentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="receiveTime != null">
+                receive_time = #{receiveTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=INTEGER},
+            </if>
+            modified_time = now(),
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.oms.bean.OrderInfo">
+        select *
+        from app_order_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete from app_order_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

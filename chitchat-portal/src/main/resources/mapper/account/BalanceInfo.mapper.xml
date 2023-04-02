@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.BalanceInfoDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.account.BalanceInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="coins_balance" jdbcType="DECIMAL" property="coinsBalance"/>
+        <result column="diamonds_balance" jdbcType="DECIMAL" property="diamondsBalance"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, account_id, coins_balance, diamonds_balance, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.BalanceInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_balance_info (account_id, coins_balance, diamonds_balance,
+        created_time)
+        values (#{accountId,jdbcType=BIGINT}, #{coinsBalance,jdbcType=DECIMAL}, #{diamondsBalance,jdbcType=DECIMAL},
+        now())
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.chitchat.portal.bean.account.BalanceInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_balance_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">
+                account_id,
+            </if>
+            <if test="coinsBalance != null">
+                coins_balance,
+            </if>
+            <if test="diamondsBalance != null">
+                diamonds_balance,
+            </if>
+            <if test="createdTime != null">
+                created_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">
+                #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="coinsBalance != null">
+                #{coinsBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="diamondsBalance != null">
+                #{diamondsBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="createdTime != null">
+                #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.chitchat.portal.bean.account.BalanceInfo">
+        update app_balance_info
+        set account_id       = #{accountId,jdbcType=BIGINT},
+            coins_balance    = #{coinsBalance,jdbcType=DECIMAL},
+            diamonds_balance = #{diamondsBalance,jdbcType=DECIMAL}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.BalanceInfo">
+        update app_balance_info
+        <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="coinsBalance != null">
+                coins_balance = #{coinsBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="diamondsBalance != null">
+                diamonds_balance = #{diamondsBalance,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--用户余额扣减-->
+    <update id="accountBalanceSubCoins">
+        update app_balance_info
+        set coins_balance = coins_balance - #{giftAmount}
+        where account_id = #{accountId} and coins_balance >= #{giftAmount}
+    </update>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel"
+            resultType="com.chitchat.portal.bean.account.BalanceInfo">
+        select
+        *
+        from `app_balance_info`
+        where 1=1
+        <if test="userInfo != null">
+            and account_id = #{userInfo.id}
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.BalanceInfo">
+        select *
+        from app_balance_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.BalanceInfo">
+        select *
+        from app_balance_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--查询用户余额-->
+    <select id="getByAccountId" resultType="com.chitchat.portal.bean.account.BalanceInfo">
+        select *
+        from app_balance_info
+        where account_id = #{accountId}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete
+        from app_balance_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountInfoDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_account_info` (
+        username,
+        password,
+        nick_name,
+        mobile,
+        email,
+        bg_img,
+        icon,
+        gender,
+        birthday,
+        country,
+        city,
+        job,
+        personalized_signature,
+        account_level_id,
+        account_level_exp,
+        account_game_level_id,
+        account_game_level_exp,
+        vip_level_id,
+        king_level_id,
+        source_type,
+        following_num,
+        follower_num,
+        last_login_time,
+        status,
+        modified_time,
+        created_time
+        ) values (
+                #{username,jdbcType=VARCHAR},
+                #{password,jdbcType=VARCHAR},
+                #{nickName,jdbcType=VARCHAR},
+                #{mobile,jdbcType=VARCHAR},
+                #{email,jdbcType=VARCHAR},
+                #{bgImg,jdbcType=VARCHAR},
+                #{icon,jdbcType=VARCHAR},
+                #{gender,jdbcType=INTEGER},
+                #{birthday,jdbcType=DATE},
+                #{country,jdbcType=VARCHAR},
+                #{city,jdbcType=VARCHAR},
+                #{job,jdbcType=VARCHAR},
+                #{personalizedSignature,jdbcType=VARCHAR},
+                #{accountLevelId,jdbcType=BIGINT},
+                #{accountLevelExp,jdbcType=INTEGER},
+                #{accountGameLevelId,jdbcType=BIGINT},
+                #{accountGameLevelExp,jdbcType=INTEGER},
+                #{vipLevelId,jdbcType=BIGINT},
+                #{kingLevelId,jdbcType=BIGINT},
+                #{sourceType,jdbcType=INTEGER},
+                #{followingNum,jdbcType=INTEGER},
+                #{followerNum,jdbcType=INTEGER},
+                #{lastLoginTime,jdbcType=TIMESTAMP},
+                #{status,jdbcType=INTEGER},
+                now(),
+                now()
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountInfo">
+        update `app_account_info`
+        <set>
+            <if test="username != null" >
+                `username`=#{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                `password`=#{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null" >
+                `nick_name`=#{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null" >
+                `mobile`=#{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null" >
+                `email`=#{email,jdbcType=VARCHAR},
+            </if>
+            <if test="bgImg != null" >
+                `bg_img`=#{bgImg,jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null" >
+                `icon`=#{icon,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null" >
+                `gender`=#{gender,jdbcType=INTEGER},
+            </if>
+            <if test="birthday != null" >
+                `birthday`=#{birthday,jdbcType=DATE},
+            </if>
+            <if test="country != null" >
+                `country`=#{country,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null" >
+                `city`=#{city,jdbcType=VARCHAR},
+            </if>
+            <if test="job != null" >
+                `job`=#{job,jdbcType=VARCHAR},
+            </if>
+            <if test="personalizedSignature != null" >
+                `personalized_signature`=#{personalizedSignature,jdbcType=VARCHAR},
+            </if>
+            <if test="accountLevelId != null" >
+                `account_level_id`=#{accountLevelId,jdbcType=BIGINT},
+            </if>
+            <if test="accountLevelExp != null" >
+                `account_level_exp`=#{accountLevelExp,jdbcType=INTEGER},
+            </if>
+            <if test="accountGameLevelId != null" >
+                `account_game_level_id`=#{accountGameLevelId,jdbcType=BIGINT},
+            </if>
+            <if test="accountGameLevelExp != null" >
+                `account_game_level_exp`=#{accountGameLevelExp,jdbcType=INTEGER},
+            </if>
+            <if test="vipLevelId != null" >
+                `vip_level_id`=#{vipLevelId,jdbcType=BIGINT},
+            </if>
+            <if test="kingLevelId != null" >
+                `king_level_id`=#{kingLevelId,jdbcType=BIGINT},
+            </if>
+            <if test="sourceType != null" >
+                `source_type`=#{sourceType,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                `status`=#{status,jdbcType=INTEGER},
+            </if>
+            <if test="followingNum != null" >
+                `following_num`=#{followingNum,jdbcType=INTEGER},
+            </if>
+            <if test="followerNum != null" >
+                `follower_num`=#{followerNum,jdbcType=INTEGER},
+            </if>
+            <if test="lastLoginTime != null" >
+                `last_login_time`=#{lastLoginTime,jdbcType=TIMESTAMP},
+            </if>
+            modified_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select * from `app_account_info`
+        where
+              1=1
+            <if test="likeName != null and likeName != ''">
+                and (nick_name like concat('%', #{likeName},'%') or id like concat('%', #{likeName},'%') )
+            </if>
+        order by id desc
+    </select>
+
+    <!--获取用户信息 通过登录名-->
+    <select id="loadUserByUsername" parameterType="java.lang.String" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select * from `app_account_info` where username = #{username}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select * from `app_account_info` where id = #{id}
+    </select>
+
+    <!--获取用户信息 通过手机号-->
+    <select id="getByMobile" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select * from `app_account_info` where mobile = #{mobile}
+    </select>
+
+    <!--通过openId获取会员信息-->
+    <select id="loadUserByOpenId" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select
+               ai.*
+        from `app_account_info` ai,app_account_login_auth ala
+        where ai.id = ala.account_id
+          and ala.bind_flag = 1
+          and ala.identifier = #{openid} and ala.identity_type = #{identityType}
+    </select>
+
+    <!--首页搜索用户-->
+    <select id="selectBySearch" resultType="com.chitchat.portal.vo.index.SearchUserVO">
+        select
+            ai.id,
+            ai.nick_name,
+            ai.country,
+            ai.gender,
+            ai.icon,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from `app_account_info` ai
+        where ai.id != #{userInfo.id}
+        <if test="likeName != null and likeName != ''">
+            and (ai.nick_name like concat('%', #{likeName},'%') or ai.id like concat('%', #{likeName},'%') )
+        </if>
+        order by ai.id desc
+    </select>
+
+    <!--新增第三方扩展表-->
+    <insert id="insertAccountLoginAuth">
+        insert into `app_account_login_auth` (
+            account_id,
+            identifier,
+            identity_type,
+            credential,
+            bind_flag,
+            created_time
+        ) values (
+                     #{accountId,jdbcType=BIGINT},
+                     #{identifier,jdbcType=VARCHAR},
+                     #{identityType,jdbcType=INTEGER},
+                     #{credential,jdbcType=VARCHAR},
+                     #{bindFlag,jdbcType=INTEGER},
+                     now()
+                 )
+    </insert>
+
+    <!--查询用户关注表通过用户id-->
+    <select id="getFansByUserId" resultType="com.chitchat.portal.bean.account.AccountFollowLink">
+        select *
+        from app_account_follow_link aafl
+        where aafl.follow_status = 1
+          and aafl.account_id = #{userId}
+          and aafl.target_id = #{targetId}
+          and aafl.follow_type = #{type}
+    </select>
+
+    <!--获取用户信息-手机号或者用户登录名-->
+    <select id="getByMobileOrUsername" resultType="com.chitchat.portal.bean.account.AccountInfo">
+        select * from `app_account_info` where username = #{username} or mobile = #{username}
+    </select>
+
+    <!--新增用户关注关系-->
+    <insert id="insertAccountFollowLink">
+        insert into `app_account_follow_link` (
+            follow_type,
+            target_id,
+            account_id,
+            follow_status,
+            friend,
+            created_time,
+            modified_time
+        ) values (
+                     #{followType,jdbcType=INTEGER},
+                     #{targetId,jdbcType=BIGINT},
+                     #{accountId,jdbcType=BIGINT},
+                     #{followStatus,jdbcType=INTEGER},
+                     #{friend,jdbcType=INTEGER},
+                     now(),
+                     now()
+                 )
+    </insert>
+
+    <!--修改用户关注关系-->
+    <update id="updateAccountFollowLink" parameterType="com.chitchat.portal.bean.account.AccountFollowLink">
+        update `app_account_follow_link`
+        <set>
+            <if test="followType != null" >
+                follow_type = #{followType,jdbcType=INTEGER},
+            </if>
+            <if test="targetId != null" >
+                target_id = #{targetId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null" >
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="followStatus != null" >
+                follow_status = #{followStatus,jdbcType=INTEGER},
+            </if>
+            <if test="friend != null" >
+                friend = #{friend,jdbcType=INTEGER},
+            </if>
+            modified_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

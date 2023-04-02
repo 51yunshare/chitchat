@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomMicInfoDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomMicInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_room_mic_info` (
+            room_id,
+            order_num,
+            mic_status,
+            whether_lock,
+            created_time
+        ) values (
+            #{roomId,jdbcType=BIGINT},
+            #{orderNum,jdbcType=INTEGER},
+            #{micStatus,jdbcType=INTEGER},
+            #{whetherLock,jdbcType=INTEGER},
+            now()
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomMicAccountLink">
+        update `app_room_mic_info`
+        <set>
+            <if test="roomId != null" >
+                `room_id`=#{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="orderNum != null" >
+                `order_num`=#{orderNum,jdbcType=INTEGER},
+            </if>
+            <if test="micStatus != null" >
+                `mic_status`=#{micStatus,jdbcType=INTEGER},
+            </if>
+            <if test="whetherLock != null" >
+                `whether_lock`=#{whetherLock,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--初始化房间麦位-->
+    <insert id="init">
+        insert into `app_room_mic_info` (
+          room_id, order_num, mic_status, whether_lock, created_time
+        ) select #{roomId} as room_id, order_num, mic_status, whether_lock, now() as created_time
+        from app_room_mic_info where room_id = 0 order by order_num limit #{micNum}
+    </insert>
+
+    <!--获取麦位信息-->
+    <select id="getById" resultType="com.chitchat.portal.bean.room.RoomMicInfo">
+        select * from `app_room_mic_info` where id = #{id}
+    </select>
+
+    <!--获取房间麦位-->
+    <select id="getMicByRoomId" resultType="com.chitchat.portal.bean.room.RoomMicInfo">
+        select * from `app_room_mic_info` where room_id = #{roomId}
+    </select>
+
+    <!--通过房间id获取房间麦位用户状态-->
+    <select id="listAccountMicByRoomId" resultType="com.chitchat.portal.vo.room.RoomMicAccountInfoVO">
+        SELECT
+            mic.id,
+            mic.mic_status,
+            mic.whether_lock,
+            mic.order_num,
+            rmal.account_mic_status,
+            rmal.mute_mic_status,
+            rmal.account_id,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        FROM
+            app_room_mic_info mic
+            LEFT JOIN app_room_mic_account_link rmal ON rmal.mic_id = mic.id and mic.room_id = rmal.room_id and rmal.deleted = 0
+            LEFT JOIN app_account_info ai ON ai.id = rmal.account_id
+        where
+            mic.room_id = #{roomId}
+        order by mic.order_num
+    </select>
+
+    <!--查询最小空闲麦位-->
+    <select id="getMinFreeMicByRoomId" resultType="com.chitchat.portal.bean.room.RoomMicInfo">
+        SELECT
+               *
+        FROM app_room_mic_info
+        WHERE mic_status = 0 and order_num != 0 and room_id = #{roomId}
+        ORDER BY order_num DESC LIMIT 1
+    </select>
+</mapper>

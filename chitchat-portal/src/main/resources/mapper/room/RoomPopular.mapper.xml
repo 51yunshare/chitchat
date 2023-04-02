@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomPopularDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomPopular">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <result column="recommend_sort" jdbcType="INTEGER" property="recommendSort"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="memo" jdbcType="VARCHAR" property="memo"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, room_id, recommend_sort, creator, memo, modified_time, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomPopular">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_room_popular (room_id, recommend_sort, creator,
+        memo, modified_time, created_time
+        )
+        values (#{roomId,jdbcType=BIGINT}, #{recommendSort,jdbcType=INTEGER}, #{creator,jdbcType=VARCHAR},
+        #{memo,jdbcType=VARCHAR}, now(), now()
+        )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomPopular">
+        update app_room_popular
+        <set>
+            <if test="roomId != null">
+                room_id = #{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="recommendSort != null">
+                recommend_sort = #{recommendSort,jdbcType=INTEGER},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+            modified_time = now()
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="update" parameterType="com.chitchat.portal.bean.room.RoomPopular">
+        update app_room_popular
+        set room_id        = #{roomId,jdbcType=BIGINT},
+            recommend_sort = #{recommendSort,jdbcType=INTEGER},
+            creator        = #{creator,jdbcType=VARCHAR},
+            memo           = #{memo,jdbcType=VARCHAR},
+            modified_time  = now()
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultType="com.chitchat.portal.bean.room.RoomPopular">
+        select *
+        from app_room_popular
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.room.RoomPopular">
+        select *
+        from app_room_popular
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--获取配置的推荐房间-->
+    <select id="getAllPopularList" resultType="com.chitchat.portal.vo.room.RoomPopularListVO">
+        select
+            ri.*,
+            rp.recommend_sort
+        from
+             app_room_popular rp, app_room_info ri
+        where ri.id = rp.room_id
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete
+        from app_room_popular
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

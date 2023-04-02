@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.DictInfoDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.admin.bean.DictInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="pid" jdbcType="BIGINT" property="pid"/>
+        <result column="dict_type" jdbcType="INTEGER" property="dictType"/>
+        <result column="dict_value" jdbcType="VARCHAR" property="dictValue"/>
+        <result column="order_num" jdbcType="INTEGER" property="orderNum"/>
+        <result column="memo" jdbcType="VARCHAR" property="memo"/>
+        <result column="created_user_id" jdbcType="INTEGER" property="createdUserId"/>
+        <result column="created_user_name" jdbcType="VARCHAR" property="createdUserName"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="deleted" jdbcType="BIT" property="deleted"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, pid, dict_type, dict_value, order_num, memo, created_user_id, created_user_name,
+    created_time, modified_time, deleted
+    </sql>
+
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.chitchat.admin.bean.DictInfo"
+            useGeneratedKeys="true">
+        insert into sys_base_dict_info (pid,
+                                        dict_type,
+                                        dict_value,
+                                        order_num, memo,
+                                        created_user_id,
+                                        created_user_name,
+                                        created_time,
+                                        modified_time,
+                                        deleted)
+        values (#{pid,jdbcType=BIGINT},
+                #{dictType,jdbcType=INTEGER},
+                #{dictValue,jdbcType=VARCHAR},
+                #{orderNum,jdbcType=INTEGER},
+                #{memo,jdbcType=VARCHAR},
+                #{createdUserId,jdbcType=BIGINT},
+                #{createdUserName,jdbcType=VARCHAR},
+                now(),
+                now(),
+                0)
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.DictInfo">
+        update sys_base_dict_info
+        <set>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=BIGINT},
+            </if>
+            <if test="dictType != null">
+                dict_type = #{dictType,jdbcType=INTEGER},
+            </if>
+            <if test="dictValue != null">
+                dict_value = #{dictValue,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNum != null">
+                order_num = #{orderNum,jdbcType=INTEGER},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+            modified_time = now()
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="update" parameterType="com.chitchat.admin.bean.DictInfo">
+        update sys_base_dict_info
+        set pid           = #{pid,jdbcType=BIGINT},
+            dict_type     = #{dictType,jdbcType=INTEGER},
+            dict_value    = #{dictValue,jdbcType=VARCHAR},
+            order_num     = #{orderNum,jdbcType=INTEGER},
+            memo          = #{memo,jdbcType=VARCHAR},
+            modified_time = now(),
+            deleted       = #{deleted,jdbcType=BIT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.chitchat.admin.bean.DictInfo">
+        select *
+        from sys_base_dict_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.admin.bean.DictInfo">
+        select *
+        from sys_base_dict_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from sys_base_dict_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <!--根据Type值或Pid获取字典列表数据-->
+    <select id="getDictByTypeOrPid" resultType="com.chitchat.admin.bean.DictInfo">
+        select
+            dic.*
+        from
+            sys_base_dict_info dic
+        where
+            dic.deleted = 0
+            and dic.dict_type = #{type}
+            <if test="pid != null">
+                and dic.pid = #{pid}
+            </if>
+            order by dic.pid,dic.order_num,dic.id desc
+    </select>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.base.GiftInfoDaoI">
+
+    <select id="list" resultType="com.chitchat.portal.bean.base.GiftInfo" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select *
+        from `sys_base_gift_info`
+        where 1=1
+        <if test="giftType != null">
+            and gift_type = #{giftType}
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getById" resultType="com.chitchat.portal.bean.base.GiftInfo" parameterType="java.lang.Long">
+        select *
+        from `sys_base_gift_info`
+        where id =#{id}
+    </select>
+
+</mapper>

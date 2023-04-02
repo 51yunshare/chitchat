@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.base.FeedbackInfoDaoI">
+
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.base.FeedbackInfo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="feedbackType" column="feedback_type" jdbcType="INTEGER"/>
+            <result property="feedbackContent" column="feedback_content" jdbcType="VARCHAR"/>
+            <result property="feedbackFiles" column="feedback_files" jdbcType="OTHER"/>
+            <result property="contactType" column="contact_type" jdbcType="INTEGER"/>
+            <result property="contactValue" column="contact_value" jdbcType="VARCHAR"/>
+            <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.chitchat.portal.bean.base.FeedbackInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_feedback_info` (
+            feedback_type,
+            feedback_content,
+            feedback_files,
+            contact_type,
+            contact_value,
+            accoun_id,
+            nick_name,
+            created_time
+        ) values (
+            #{feedbackType,jdbcType=INTEGER},
+            #{feedbackContent,jdbcType=VARCHAR},
+            #{feedbackFiles,jdbcType=OTHER},
+            #{contactType,jdbcType=INTEGER},
+            #{contactValue,jdbcType=VARCHAR},
+            #{accountId,jdbcType=BIGINT},
+            #{nickName,jdbcType=VARCHAR},
+            now()
+        )
+    </insert>
+
+
+    <select id="list" resultType="com.chitchat.portal.bean.base.FeedbackInfo" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select *
+        from `app_feedback_info`
+        order by id desc
+    </select>
+
+</mapper>

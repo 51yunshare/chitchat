@@ -1,0 +1,36 @@
+server:
+  port: 7007
+
+spring:
+  application:
+    name: chitchat-oms
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+  profiles:
+    active: loc
+
+  ### nacos 相关
+  cloud:
+    nacos:
+      # nacos 配置中心
+      config:
+        server-addr: http://192.168.10.150:8848
+        group: ${spring.profiles.active}
+        namespace: chitchat
+        username: nacos
+        password: nacos
+        file-extension: yml
+
+      # nacos 注册中心
+      discovery:
+        server-addr: http://192.168.10.150:8848
+        group: ${spring.profiles.active}
+        namespace: chitchat
+        username: nacos
+        password: nacos
+
+  # @FeignClient 名称重复
+  main:
+    allow-bean-definition-overriding: true

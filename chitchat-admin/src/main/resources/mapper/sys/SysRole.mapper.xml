@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.SysRoleDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.admin.bean.SysRole">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="creator" jdbcType="VARCHAR" property="createdUserName" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, role_name, code, status, sort, memo, creator, created_time,
+    modified_time, deleted
+  </sql>
+  <insert id="insert" parameterType="com.chitchat.admin.bean.SysRole">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_role (role_name, code, status,
+    sort, memo, creator, created_time, modified_time,
+    deleted)
+    values (#{roleName,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+    #{sort,jdbcType=INTEGER}, #{memo,jdbcType=VARCHAR}, #{creator,jdbcType=VARCHAR}, now(), now(),
+    #{deleted,jdbcType=INTEGER})
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.SysRole">
+    update sys_role
+    <set>
+      <if test="roleName != null">
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="memo != null">
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      modified_time = now(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="update" parameterType="com.chitchat.admin.bean.SysRole">
+    update sys_role
+    set role_name = #{roleName,jdbcType=VARCHAR},
+        code = #{code,jdbcType=VARCHAR},
+        status = #{status,jdbcType=INTEGER},
+        sort = #{sort,jdbcType=INTEGER},
+        memo = #{memo,jdbcType=VARCHAR},
+        modified_time = now(),
+        deleted = #{deleted,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <!--列表-->
+  <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.admin.bean.SysRole">
+    select
+      sr.*
+    from
+        `sys_role` sr
+    order by sr.id desc
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.chitchat.admin.bean.SysRole">
+    select *
+    from sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.admin.bean.SysRole">
+    select *
+    from sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from sys_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+</mapper>

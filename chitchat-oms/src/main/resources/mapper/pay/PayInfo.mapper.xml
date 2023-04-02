@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.oms.dao.PayInfoDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.oms.bean.PayInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="pay_sn" jdbcType="VARCHAR" property="paySn" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="pay_amount" jdbcType="VARCHAR" property="payAmount" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="pay_type" jdbcType="INTEGER" property="payType" />
+    <result column="pay_status" jdbcType="INTEGER" property="payStatus" />
+    <result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime" />
+    <result column="callback_content" jdbcType="VARCHAR" property="callbackContent" />
+    <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime" />
+    <result column="pay_subject" jdbcType="VARCHAR" property="paySubject" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, order_id, order_sn, pay_sn, pay_amount, pay_time, pay_type, pay_status, confirm_time, callback_content,
+    callback_time, pay_subject, deleted, modified_time, created_time
+  </sql>
+
+
+  <insert id="insert" parameterType="com.chitchat.oms.bean.PayInfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into app_pay_info (order_id, order_sn, pay_sn, pay_amount, pay_time,
+    pay_type, pay_status, confirm_time,
+    callback_content, callback_time, pay_subject,
+    deleted, modified_time, created_time
+    )
+    values (#{orderId,jdbcType=BIGINT},#{orderSn,jdbcType=VARCHAR},#{paySn,jdbcType=VARCHAR}, #{payAmount,jdbcType=VARCHAR}, #{payTime,jdbcType=TIMESTAMP},
+    #{payType,jdbcType=INTEGER}, #{payStatus,jdbcType=INTEGER}, #{confirmTime,jdbcType=TIMESTAMP},
+    #{callbackContent,jdbcType=VARCHAR}, #{callbackTime,jdbcType=TIMESTAMP}, #{paySubject,jdbcType=VARCHAR},
+    0, now(), now()
+    )
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.oms.bean.PayInfo">
+    update app_pay_info
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null">
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+      </if>
+      <if test="paySn != null">
+        pay_sn = #{paySn,jdbcType=VARCHAR},
+      </if>
+      <if test="payAmount != null">
+        pay_amount = #{payAmount,jdbcType=VARCHAR},
+      </if>
+      <if test="payTime != null">
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payType != null">
+        pay_type = #{payType,jdbcType=INTEGER},
+      </if>
+      <if test="payStatus != null">
+        pay_status = #{payStatus,jdbcType=INTEGER},
+      </if>
+      <if test="confirmTime != null">
+        confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="callbackContent != null">
+        callback_content = #{callbackContent,jdbcType=VARCHAR},
+      </if>
+      <if test="callbackTime != null">
+        callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="paySubject != null">
+        pay_subject = #{paySubject,jdbcType=VARCHAR},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=VARCHAR},
+      </if>
+      modified_time = now()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.chitchat.oms.bean.PayInfo">
+    update app_pay_info
+    set
+        order_id = #{orderId,jdbcType=BIGINT},
+        order_sn = #{orderSn,jdbcType=VARCHAR},
+        pay_sn = #{paySn,jdbcType=VARCHAR},
+        pay_amount = #{payAmount,jdbcType=VARCHAR},
+        pay_time = #{payTime,jdbcType=TIMESTAMP},
+        pay_type = #{payType,jdbcType=INTEGER},
+        pay_status = #{payStatus,jdbcType=INTEGER},
+        confirm_time = #{confirmTime,jdbcType=TIMESTAMP},
+        callback_content = #{callbackContent,jdbcType=VARCHAR},
+        callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+        pay_subject = #{paySubject,jdbcType=VARCHAR},
+        deleted = #{deleted,jdbcType=INTEGER},
+        modified_time = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select *
+    from app_pay_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from app_pay_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+</mapper>

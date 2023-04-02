@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.GoodsInfoDaoI">
+
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.chitchat.admin.bean.GoodsInfo"
+            useGeneratedKeys="true">
+        insert into app_goods_info (
+            goods_category_id,
+            goods_category_name,
+            goods_name,
+            goods_img,
+            goods_effect_img,
+            goods_cover,
+            sort,
+            goods_price,
+            promotion_price,
+            duration,
+            sales,
+            publish_status,
+            new_status,
+            recommend_status,
+            memo,
+            deleted,
+            gift_growth,
+            created_time
+        )
+        values (
+           #{goodsCategoryId,jdbcType=BIGINT},
+           #{goodsCategoryName,jdbcType=VARCHAR},
+           #{goodsName,jdbcType=VARCHAR},
+           #{goodsImg,jdbcType=OTHER},
+           #{goodsEffectImg,jdbcType=VARCHAR},
+           #{goodsCover,jdbcType=VARCHAR},
+           #{sort,jdbcType=INTEGER},
+           #{goodsPrice,jdbcType=DECIMAL},
+           #{promotionPrice,jdbcType=DECIMAL},
+           #{duration,jdbcType=INTEGER},
+           #{sales,jdbcType=INTEGER},
+           #{publishStatus,jdbcType=INTEGER},
+           #{newStatus,jdbcType=INTEGER},
+           #{recommendStatus,jdbcType=INTEGER},
+           #{memo,jdbcType=VARCHAR},
+           0,
+           #{giftGrowth,jdbcType=INTEGER},
+           now()
+        )
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.GoodsInfo">
+        update app_goods_info
+        <set>
+            <if test="goodsCategoryId != null">
+                goods_category_id = #{goodsCategoryId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsCategoryName != null">
+                goods_category_name = #{goodsCategoryName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsImg != null">
+                goods_img = #{goodsImg,jdbcType=OTHER},
+            </if>
+            <if test="goodsEffectImg != null">
+                goods_effectImg = #{goodsEffectImg,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCover != null">
+                goods_cover = #{goodsCover,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPrice != null">
+                goods_price = #{goodsPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="promotionPrice != null">
+                promotion_price = #{promotionPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="duration != null">
+                duration = #{duration,jdbcType=INTEGER},
+            </if>
+            <if test="sales != null">
+                sales = #{sales,jdbcType=INTEGER},
+            </if>
+            <if test="publishStatus">
+                publish_status = #{publishStatus,jdbcType=INTEGER},
+            </if>
+            <if test="newStatus != null">
+                new_status =#{newStatus,jdbcType=INTEGER},
+            </if>
+            <if test="recommendStatus != null">
+                recommend_status = #{recommendStatus,jdbcType=INTEGER},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+            <if test="giftGrowth != null">
+                gift_growth = #{giftGrowth,jdbcType=INTEGER},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.chitchat.admin.bean.GoodsInfo">
+        select *
+        from app_goods_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.admin.bean.GoodsInfo">
+        select *
+        from app_goods_info
+        where 1=1
+            <if test="goodsCategoryId != null">
+                and goods_category_id = #{goodsCategoryId}
+            </if>
+            order by sort asc,id asc
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.admin.bean.GoodsInfo">
+        select *
+        from app_goods_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete
+        from app_goods_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: chitchat-zego
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+  profiles:
+    active: loc
+
+  ### nacos 相关
+  cloud:
+    nacos:
+      # nacos 配置中心
+      config:
+        server-addr: http://192.168.10.150:8848
+        group: ${spring.profiles.active}
+        refresh-enabled: true
+        namespace: chitchat
+        username: nacos
+        password: nacos
+        file-extension: yml
+
+      # nacos 注册中心
+      discovery:
+        server-addr: http://192.168.10.150:8848
+        group: ${spring.profiles.active}
+        namespace: chitchat
+        username: nacos
+        password: nacos
+

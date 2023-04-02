@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountGiftLinkDaoI">
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountGiftLink">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_account_gift_link` (
+            gift_id,
+            gift_price,
+            gift_amount,
+            gift_num,
+            target_id,
+            room_id,
+            account_id,
+            created_time
+        ) values (
+            #{giftId,jdbcType=BIGINT},
+            #{giftPrice,jdbcType=DECIMAL},
+            #{giftAmount,jdbcType=DECIMAL},
+            #{giftNum,jdbcType=INTEGER},
+            #{targetId,jdbcType=BIGINT},
+            #{roomId,jdbcType=BIGINT},
+            #{accountId,jdbcType=BIGINT},
+            now()
+        )
+    </insert>
+
+    <select id="list" resultType="com.chitchat.portal.bean.account.AccountGiftLink" parameterType="com.chitchat.common.base.BasePageRequestModel">
+        select *
+        from `app_account_gift_link`
+        order by id desc
+    </select>
+
+    <!--房间贡献榜单-->
+    <select id="getContributionRank" resultType="com.chitchat.portal.vo.room.RoomContributionRankVO">
+        SELECT
+               r.contributionValue,
+               r.account_id,
+               ai.nick_name,
+               ai.icon,
+               ai.gender,
+               ai.country,
+               ai.account_level_id,
+               ai.account_game_level_id,
+               ai.king_level_id,
+               ai.vip_level_id
+        FROM (
+            SELECT sum(gift_amount) as contributionValue, account_id
+            FROM app_account_gift_link
+            WHERE room_id = #{roomId}
+                <if test="type != null">
+                    <if test="type == 1">
+                        and to_days(created_time) = to_days(now())
+                    </if>
+                    <if test="type == 2">
+                        and YEARWEEK(date_format(created_time,'%Y-%m-%d')) = YEARWEEK(now())
+                    </if>
+                </if>
+                GROUP BY account_id HAVING contributionValue > 0
+                ORDER BY contributionValue desc
+                <if test="type != null">
+                    <if test="type == 1">LIMIT 30</if>
+                    <if test="type == 2">LIMIT 50</if>
+                </if>
+            ) r
+            left join app_account_info ai on ai.id = r.account_id
+    </select>
+
+    <!--用户收到所有礼物-->
+    <select id="getReceivedGiftByAccountId"
+            resultType="com.chitchat.portal.vo.account.AccountDetailVO$ReceivedGiftInfo">
+        select
+            agl.gift_id,
+            gi.gift_name,
+            gi.gift_icon,
+            gi.gift_effect_url,
+            sum(agl.gift_num) as gift_sum_num
+        from app_account_gift_link agl
+            left join sys_base_gift_info gi on gi.id = agl.gift_id
+        where agl.target_id = #{accountId}
+            group by agl.gift_id
+    </select>
+
+</mapper>

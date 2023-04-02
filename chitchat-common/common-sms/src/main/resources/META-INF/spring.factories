@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.chitchat.common.sms.config.AliSmsConfig,\
+  com.chitchat.common.sms.service.AliSms,\
+  com.chitchat.common.sms.controller.SmsCodeController
+

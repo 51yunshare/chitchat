@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountFriendsLinkDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.account.AccountFriendsLink">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="friend_account_id" jdbcType="BIGINT" property="friendAccountId"/>
+        <result column="friend_status" jdbcType="INTEGER" property="friendStatus"/>
+        <result column="cancel_time" jdbcType="TIMESTAMP" property="cancelTime"/>
+        <result column="friend_time" jdbcType="TIMESTAMP" property="friendTime"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, account_id, friend_account_id, friend_status, cancel_time, friend_time, created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_account_friends_link (account_id, friend_account_id, friend_status, cancel_time,
+        friend_time, created_time)
+        values (#{accountId,jdbcType=BIGINT}, #{friendAccountId,jdbcType=BIGINT}, #{friendStatus,jdbcType=INTEGER}, #{cancelTime,jdbcType=TIMESTAMP},
+        #{friendTime,jdbcType=TIMESTAMP}, now())
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        update app_account_friends_link
+        <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="friendAccountId != null">
+                friend_account_id = #{friendAccountId,jdbcType=BIGINT},
+            </if>
+            <if test="friendStatus != null">
+                friend_status = #{friendStatus,jdbcType=INTEGER},
+            </if>
+            <if test="cancelTime != null">
+                cancel_time = #{cancelTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="friendTime != null">
+                friend_time = #{friendTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="update" parameterType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        update app_account_friends_link
+        set account_id        = #{accountId,jdbcType=BIGINT},
+            friend_account_id = #{friendAccountId,jdbcType=BIGINT},
+            friend_status = #{friendStatus,jdbcType=INTEGER},
+            cancel_time       = #{cancelTime,jdbcType=TIMESTAMP},
+            friend_time       = #{friendTime,jdbcType=TIMESTAMP},
+            created_time      = #{createdTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        select *
+        from app_account_friends_link
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long"
+            resultType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        select *
+        from app_account_friends_link
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--好友列表-->
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel"
+            resultType="com.chitchat.portal.vo.account.AccountFriendsLinkVO">
+        select
+            afl.friend_time,
+            afl.cancel_time,
+            afl.friend_account_id as account_id,
+            ai.nick_name,
+            ai.icon,
+            ai.country,
+            ai.gender,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from
+            app_account_friends_link afl
+            left join app_account_info ai on afl.friend_account_id = ai.id
+        where afl.friend_status = 1
+            <if test="accountId != null">
+                and afl.account_id = #{accountId}
+            </if>
+            order by afl.friend_time desc
+    </select>
+
+    <!--查询好友关联关系-->
+    <select id="getByAccountIdAndFriendId" resultType="com.chitchat.portal.bean.account.AccountFriendsLink">
+        select *
+        from app_account_friends_link
+        where account_id = #{accountId}
+          and friend_account_id = #{friendAccountId}
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete
+        from app_account_friends_link
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+</mapper>

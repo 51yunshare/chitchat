@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomMicAccountRecordDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomMicAccountRecord">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="room_account_id" jdbcType="BIGINT" property="roomAccountId"/>
+        <result column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="mic_id" jdbcType="BIGINT" property="micId"/>
+        <result column="on_mic_time" jdbcType="TIMESTAMP" property="onMicTime"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="off_mic_operator_id" jdbcType="BIGINT" property="offMicOperatorId"/>
+        <result column="off_mic_operator_name" jdbcType="VARCHAR" property="offMicOperatorName"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, room_account_id, room_id, account_id, mic_id, on_mic_time, created_time, off_mic_operator_id,
+    off_mic_operator_name
+    </sql>
+
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomMicAccountRecord">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_room_mic_account_record (room_account_id, room_id, account_id,
+        mic_id, on_mic_time, off_mic_operator_id, off_mic_operator_name, created_time)
+        values (#{roomAccountId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, #{accountId,jdbcType=BIGINT},
+        #{micId,jdbcType=BIGINT}, #{onMicTime,jdbcType=TIMESTAMP},
+        #{offMicOperatorId,jdbcType=BIGINT}, #{offMicOperatorName,jdbcType=VARCHAR}, now())
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomMicAccountRecord">
+        update app_room_mic_account_record
+        <set>
+            <if test="roomAccountId != null">
+                room_account_id = #{roomAccountId,jdbcType=BIGINT},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="micId != null">
+                mic_id = #{micId,jdbcType=BIGINT},
+            </if>
+            <if test="onMicTime != null">
+                on_mic_time = #{onMicTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="offMicOperatorId != null">
+                off_mic_operator_id = #{offMicOperatorId,jdbcType=BIGINT},
+            </if>
+            <if test="offMicOperatorName != null">
+                off_mic_operator_name = #{offMicOperatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="created_time != null">
+                created_time = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="update" parameterType="com.chitchat.portal.bean.room.RoomMicAccountRecord">
+        update app_room_mic_account_record
+        set room_account_id       = #{roomAccountId,jdbcType=BIGINT},
+            room_id               = #{roomId,jdbcType=BIGINT},
+            account_id            = #{accountId,jdbcType=BIGINT},
+            mic_id                = #{micId,jdbcType=BIGINT},
+            on_mic_time           = #{onMicTime,jdbcType=TIMESTAMP},
+            off_mic_operator_id   = #{offMicOperatorId,jdbcType=BIGINT},
+            off_mic_operator_name = #{offMicOperatorName,jdbcType=VARCHAR},
+            created_time          = #{createdTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long"
+            resultType="com.chitchat.portal.bean.room.RoomMicAccountRecord">
+        select *
+        from app_room_mic_account_record
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from app_room_mic_account_record
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

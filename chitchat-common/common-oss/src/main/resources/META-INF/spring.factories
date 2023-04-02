@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.chitchat.common.oss.config.OssConfig,\
+  com.chitchat.common.oss.service.impl.OssServiceImpl,\
+  com.chitchat.common.oss.controller.OssController
+

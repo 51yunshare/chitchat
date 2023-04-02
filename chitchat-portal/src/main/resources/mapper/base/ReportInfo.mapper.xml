@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.base.ReportInfoDaoI">
+
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.base.ReportInfo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="targetId" column="target_id" jdbcType="BIGINT"/>
+            <result property="accountId" column="account_id" jdbcType="BIGINT"/>
+            <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.base.ReportInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_report_info` (
+            report_type,
+            target_id,
+            target_name,
+            account_id,
+            nick_name,
+            reason,
+            memo,
+            screenshot,
+            created_time
+        ) values (
+            #{reportType,jdbcType=INTEGER},
+            #{targetId,jdbcType=BIGINT},
+            #{targetName,jdbcType=VARCHAR},
+            #{accountId,jdbcType=BIGINT},
+            #{nickName,jdbcType=VARCHAR},
+            #{reason,jdbcType=INTEGER},
+            #{memo,jdbcType=VARCHAR},
+            #{screenshot,jdbcType=OTHER},
+            now()
+        )
+    </insert>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.base.ReportInfo">
+        select *
+        from `app_report_info`
+        order by id desc
+    </select>
+
+</mapper>

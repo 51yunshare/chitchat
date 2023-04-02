@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomMicInviteInfoDaoI">
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="room_account_link_id" jdbcType="BIGINT" property="roomAccountLinkId"/>
+        <result column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <result column="account_id" jdbcType="BIGINT" property="accountId"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
+        <result column="memo" jdbcType="VARCHAR" property="memo"/>
+        <result column="operate_status" jdbcType="INTEGER" property="operateStatus"/>
+        <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, room_account_link_id, room_id, account_id, mic_id, operate_status, operate_time, creator, memo, created_time
+    </sql>
+
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_room_mic_invite_info (room_account_link_id, room_id, account_id,
+        operate_status, operate_time, creator, memo, created_time)
+        values (#{roomAccountLinkId,jdbcType=BIGINT}, #{roomId,jdbcType=BIGINT}, #{accountId,jdbcType=BIGINT},
+        #{operateStatus,jdbcType=INTEGER}, #{operateTime,jdbcType=TIMESTAMP},
+        #{creator,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR}, now())
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        update app_room_mic_invite_info
+        <set>
+            <if test="roomAccountLinkId != null">
+                room_account_link_id = #{roomAccountLinkId,jdbcType=BIGINT},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="operateStatus != null">
+                operate_status = #{operateStatus,jdbcType=INTEGER},
+            </if>
+            <if test="operateTime != null">
+                operate_time = #{operateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creator != null">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="memo != null">
+                memo = #{memo,jdbcType=VARCHAR},
+            </if>
+            <if test="createdTime != null">
+                created_time = #{createdTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="update" parameterType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        update app_room_mic_invite_info
+        set room_account_link_id = #{roomAccountLinkId,jdbcType=BIGINT},
+            room_id              = #{roomId,jdbcType=BIGINT},
+            account_id           = #{accountId,jdbcType=BIGINT},
+            operate_status       = #{operateStatus,jdbcType=INTEGER},
+            operate_time         = #{operateTime,jdbcType=TIMESTAMP},
+            creator              = #{creator,jdbcType=VARCHAR},
+            memo                 = #{memo,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--邀请上麦状态修改-->
+    <update id="updateInviteStatusByRoomIdAndAccountId">
+        update app_room_mic_invite_info
+        set operate_status = 1, operate_time = now()
+        where operate_status = 0 and room_id = #{roomId}
+          and account_id = #{accountId}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+            resultType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        select *
+        from app_room_mic_invite_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long"
+            resultType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        select *
+        from app_room_mic_invite_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!--查询用户邀请上麦记录-->
+    <select id="getByRoomAndAccountId" resultType="com.chitchat.portal.bean.room.RoomMicInviteInfo">
+        select *
+        from app_room_mic_invite_info
+        where operate_status = 0
+          and room_id = #{roomId}
+          and account_id = #{accountId}
+        order by id desc limit 1
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete
+        from app_room_mic_invite_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

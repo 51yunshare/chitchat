@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomAccountLinkDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomAccountLink">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_room_account_link` (
+            room_id,
+            account_id,
+            nick_name,
+            session_id,
+            user_role,
+            reason,
+            login_time,
+            logout_time,
+            created_time,
+            modified_time,
+            deleted
+        ) values (
+            #{roomId,jdbcType=BIGINT},
+            #{accountId,jdbcType=BIGINT},
+            #{nickName,jdbcType=VARCHAR},
+            #{sessionId,jdbcType=VARCHAR},
+            #{userRole,jdbcType=INTEGER},
+            #{reason,jdbcType=INTEGER},
+            #{loginTime,jdbcType=TIMESTAMP},
+            #{logoutTime,jdbcType=TIMESTAMP},
+            now(),
+            now(),
+            0
+        )
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.room.RoomAccountLink">
+        update `app_room_account_link`
+        <set>
+            <if test="roomId != null" >
+                `room_id`=#{roomId,jdbcType=BIGINT},
+            </if>
+            <if test="accountId != null" >
+                `account_id`=#{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="nickName != null" >
+                `nick_name`=#{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="sessionId != null" >
+                `session_id`=#{sessionId,jdbcType=VARCHAR},
+            </if>
+            <if test="userRole != null" >
+                `user_role`=#{userRole,jdbcType=INTEGER},
+            </if>
+            <if test="reason != null" >
+                `reason`=#{reason,jdbcType=INTEGER},
+            </if>
+            <if test="loginTime != null" >
+                `login_time`=#{loginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="logoutTime != null">
+                `logout_time`=#{logoutTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deleted != null" >
+                `deleted`=#{deleted,jdbcType=BIT},
+            </if>
+            `modified_time`=now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--查询房间在线用户数量-->
+    <select id="getUserNumByRoomId" resultType="java.lang.Integer">
+        select count(0)
+        from app_room_account_link where room_id = #{roomId} and deleted = 0;
+    </select>
+
+    <select id="getByRoomIdAndAccountId" resultType="com.chitchat.portal.bean.room.RoomAccountLink">
+        select
+               *
+        from app_room_account_link
+        where room_id = #{roomId} and account_id = #{accountId};
+    </select>
+
+    <delete id="deleteByLongId" parameterType="java.lang.Long" >
+        delete
+        from app_room_account_link
+        where id = #{id};
+    </delete>
+
+    <!--房间在线列表-->
+    <select id="listRoomUser" resultType="com.chitchat.portal.vo.room.RoomAccountLinkVO">
+        select
+            ral.*,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id
+        from app_room_account_link ral
+            left join app_account_info ai on  ai.id = ral.account_id
+        where ral.deleted = 0 and ral.room_id = #{roomId}
+            order by ral.user_role asc, ral.login_time desc
+    </select>
+
+    <!--获取房间用户基本信息-->
+    <select id="getRoomUserInfoByRoomIdAndAccountId" resultType="com.chitchat.portal.vo.room.RoomUserBaseInfo">
+        select
+            ai.id,
+            ai.nick_name,
+            ai.icon,
+            ai.gender,
+            ai.country,
+            ai.account_level_id,
+            ai.account_game_level_id,
+            ai.vip_level_id,
+            ai.king_level_id,
+            ral.user_role
+        from
+             app_room_account_link ral
+            left join app_account_info ai on  ai.id = ral.account_id
+        where ral.deleted = 0 and ral.room_id = #{roomId} and ral.account_id = #{accountId}
+    </select>
+
+    <!--获取房间所有在线用户-->
+    <select id="listRoomAccountLinkByRoomId" resultType="com.chitchat.portal.bean.room.RoomAccountLink">
+        select
+            *
+        from app_room_account_link
+        where deleted = 0 and room_id = #{roomId}
+    </select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.oms.dao.AccountBalanceDaoI">
+
+    <!--用户余额扣减-->
+    <update id="accountBalanceSubCoins">
+        update app_balance_info
+        set coins_balance = coins_balance - #{amount}
+        where account_id = #{accountId} and coins_balance >= #{amount}
+    </update>
+
+    <!--查询用户余额-->
+    <select id="getByAccountId" resultType="com.chitchat.oms.bean.account.AccountBalanceInfo">
+        select *
+        from app_balance_info
+        where account_id = #{accountId}
+    </select>
+
+    <!--生成余额流水-->
+    <insert id="insertBalanceFlowInfo" parameterType="com.chitchat.oms.bean.account.AccountBalanceFlowInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_balance_flow_log (
+        type,
+        flow_type, pre_balance_num,
+        cur_order_num, post_balance_num, pay_id, order_id, order_sn,
+        account_id, balance_id, created_user_id, created_user_name,
+        created_time)
+        values (#{type,jdbcType=INTEGER}, #{flowType,jdbcType=INTEGER}, #{preBalanceNum,jdbcType=DECIMAL},
+        #{curOrderNum,jdbcType=DECIMAL}, #{postBalanceNum,jdbcType=DECIMAL}, #{payId,jdbcType=BIGINT},#{orderId,jdbcType=BIGINT},#{orderSn,jdbcType=VARCHAR},
+        #{accountId,jdbcType=BIGINT}, #{balanceId,jdbcType=BIGINT}, #{createdUserId,jdbcType=BIGINT}, #{createdUserName,jdbcType=VARCHAR},
+        now())
+    </insert>
+
+    <!--背包道具新增-->
+    <insert id="addAccountBackpack" parameterType="com.chitchat.oms.bean.account.AccountBackpack">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_account_backpack_info (
+        order_id,
+        order_sn,
+        account_id,
+        goods_id,
+        goods_category_id,
+        goods_category_name,
+        goods_name,
+        goods_cover,
+        goods_effect_img,
+        duration,
+        activate_status,
+        activated_time,
+        overdue_status,
+        overdue_time,
+        used_status,
+        used_time,
+        pause_time,
+        goods_source,
+        give_account_id,
+        created_time
+        )
+        values (
+        #{orderId,jdbcType=BIGINT},
+        #{orderSn,jdbcType=VARCHAR},
+        #{accountId,jdbcType=BIGINT},
+        #{goodsId,jdbcType=BIGINT},
+        #{goodsCategoryId,jdbcType=BIGINT},
+        #{goodsCategoryName,jdbcType=VARCHAR},
+        #{goodsName,jdbcType=VARCHAR},
+        #{goodsCover,jdbcType=VARCHAR},
+        #{goodsEffectImg,jdbcType=VARCHAR},
+        #{duration,jdbcType=INTEGER},
+        #{activateStatus,jdbcType=INTEGER},
+        #{activatedTime,jdbcType=TIMESTAMP},
+        #{overdueStatus,jdbcType=INTEGER},
+        #{overdueTime,jdbcType=TIMESTAMP},
+        #{usedStatus,jdbcType=INTEGER},
+        #{usedTime,jdbcType=TIMESTAMP},
+        #{pauseTime,jdbcType=TIMESTAMP},
+        #{goodsSource,jdbcType=INTEGER},
+        #{giveAccountId,jdbcType=BIGINT},
+        now()
+        )
+    </insert>
+
+    <!--修改背包失效道具-->
+    <update id="updateBackpackInvalidGoods">
+        update app_account_backpack_info
+        set overdue_status = 1, overdue_time = now()
+        where id = #{backpackId}
+    </update>
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.room.RoomForbiddenDaoI">
+
+    <resultMap id="BaseResultMap" type="com.chitchat.portal.bean.room.RoomForbidden">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="roomId" column="room_id" jdbcType="BIGINT"/>
+            <result property="accountId" column="account_id" jdbcType="BIGINT"/>
+            <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,room_id,account_id,created_time
+    </sql>
+
+    <!--新增被禁用户记录-->
+    <insert id="insert" parameterType="com.chitchat.portal.bean.room.RoomForbidden">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into `app_room_forbidden_account` (
+            room_id,
+            account_id,
+            created_user_id,
+            created_user_name,
+            created_time
+        ) values (
+            #{roomId,jdbcType=BIGINT},
+            #{accountId,jdbcType=BIGINT},
+            #{createdUserId,jdbcType=BIGINT},
+            #{createdUserName,jdbcType=VARCHAR},
+            now()
+        )
+    </insert>
+
+    <!--查询被禁用户-->
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel" resultType="com.chitchat.portal.bean.room.RoomForbidden">
+        select rfa.*
+        from `app_room_forbidden_account` rfa
+            left join app_account_info ai on ai.id = rfa.account_id
+        where
+            rfa.room_id = #{roomId}
+            <if test="likeName != null and likeName != ''">
+                and (ai.nick_name like concat('%', #{likeName},'%') or rfa.account_id like concat('%', #{likeName},'%'))
+            </if>
+        order by rfa.id desc
+    </select>
+
+    <!--移除被禁记录-->
+    <delete id="deleteByLongId" parameterType="java.lang.Long">
+        delete from `app_room_forbidden_account` where id = #{id}
+    </delete>
+
+    <!--查询禁止房间用户信息通过用户Id和房间id-->
+    <select id="getByRoomIdAndAccountId" resultType="com.chitchat.portal.bean.room.RoomForbidden">
+        select *
+        from app_room_forbidden_account
+        where room_id = #{roomId} and account_id = #{accountId};
+    </select>
+
+</mapper>

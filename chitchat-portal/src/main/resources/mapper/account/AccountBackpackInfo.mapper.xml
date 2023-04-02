@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.portal.dao.account.AccountBackpackDaoI">
+
+    <insert id="insert" parameterType="com.chitchat.portal.bean.account.AccountBackpackInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into app_account_backpack_info (
+       order_id,
+       order_sn,
+        account_id,
+        goods_id,
+        goods_category_id,
+        goods_category_name,
+        goods_name,
+        goods_cover,
+        goods_effect_img,
+        duration,
+        activate_status,
+        activated_time,
+        overdue_status,
+        overdue_time,
+        used_status,
+        used_time,
+        pause_time,
+        goods_source,
+        give_account_id,
+        created_time
+        )
+        values (
+        #{orderId,jdbcType=BIGINT},
+        #{orderSn,jdbcType=VARCHAR},
+        #{accountId,jdbcType=BIGINT},
+        #{goodsId,jdbcType=BIGINT},
+        #{goodsCategoryId,jdbcType=BIGINT},
+        #{goodsCategoryName,jdbcType=VARCHAR},
+        #{goodsName,jdbcType=VARCHAR},
+        #{goodsCover,jdbcType=VARCHAR},
+        #{goodsEffectImg,jdbcType=VARCHAR},
+        #{duration,jdbcType=INTEGER},
+        #{activateStatus,jdbcType=INTEGER},
+        #{activatedTime,jdbcType=TIMESTAMP},
+        #{overdueStatus,jdbcType=INTEGER},
+        #{overdueTime,jdbcType=TIMESTAMP},
+        #{usedStatus,jdbcType=INTEGER},
+        #{usedTime,jdbcType=TIMESTAMP},
+        #{pauseTime,jdbcType=TIMESTAMP},
+        #{goodsSource,jdbcType=INTEGER},
+        #{giveAccountId,jdbcType=BIGINT},
+        now()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.chitchat.portal.bean.account.AccountBackpackInfo">
+        update app_account_backpack_info
+        set account_id          = #{accountId,jdbcType=BIGINT},
+            order_id          = #{orderId,jdbcType=BIGINT},
+            order_sn          = #{orderSn,jdbcType=VARCHAR},
+            goods_id            = #{goodsId,jdbcType=BIGINT},
+            goods_category_id   = #{goodsCategoryId,jdbcType=BIGINT},
+            goods_category_name = #{goodsCategoryName,jdbcType=VARCHAR},
+            goods_name          = #{goodsName,jdbcType=VARCHAR},
+            goods_cover         = #{goodsCover,jdbcType=VARCHAR},
+            goods_effect_img    = #{goodsEffectImg,jdbcType=VARCHAR},
+            duration = #{duration,jdbcType=INTEGER},
+            activate_status = #{activateStatus,jdbcType=INTEGER},
+            activated_time = #{activatedTime,jdbcType=TIMESTAMP},
+            overdue_status = #{overdueStatus,jdbcType=INTEGER},
+            overdue_time = #{overdueTime,jdbcType=TIMESTAMP},
+            used_status = #{usedStatus,jdbcType=INTEGER},
+            used_time = #{usedTime,jdbcType=TIMESTAMP},
+            pause_time = #{pauseTime,jdbcType=TIMESTAMP},
+            goods_source = #{goodsSource,jdbcType=INTEGER},
+            give_account_id = #{giveAccountId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.portal.bean.account.AccountBackpackInfo">
+        update app_account_backpack_info
+        <set>
+            <if test="accountId != null">
+                account_id = #{accountId,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsCategoryId != null">
+                goods_category_id = #{goodsCategoryId,jdbcType=BIGINT},
+            </if>
+            <if test="goodsCategoryName != null">
+                goods_category_name = #{goodsCategoryName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsCover != null">
+                goods_cover = #{goodsCover,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsEffectImg != null">
+                goods_effect_img = #{goodsEffectImg,jdbcType=VARCHAR},
+            </if>
+            <if test="duration != null">
+                duration = #{duration,jdbcType=INTEGER},
+            </if>
+            <if test="activateStatus != null">
+                activate_status = #{activateStatus,jdbcType=INTEGER},
+            </if>
+            <if test="activatedTime != null">
+                activated_time = #{activatedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="overdueStatus != null">
+                overdue_status = #{overdueStatus,jdbcType=INTEGER},
+            </if>
+            <if test="overdueTime != null">
+                overdue_time = #{overdueTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="usedStatus != null">
+                used_status = #{usedStatus,jdbcType=INTEGER},
+            </if>
+            <if test="usedTime != null">
+                used_time = #{usedTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pauseTime != null">
+                pause_time = #{pauseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="goodsSource != null">
+                goods_source = #{goodsSource,jdbcType=INTEGER},
+            </if>
+            <if test="giveAccountId != null">
+                give_account_id = #{giveAccountId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="list" parameterType="com.chitchat.common.base.BasePageRequestModel"
+            resultType="com.chitchat.portal.bean.account.BalanceInfo">
+        select
+        *
+        from `app_account_backpack_info`
+        where 1=1
+        <if test="userInfo != null">
+            and account_id = #{userInfo.id}
+        </if>
+        <if test="overdueStatus != null">
+            and overdue_status = #{overdueStatus}
+        </if>
+        <if test="usedStatus != null">
+            and used_status = #{usedStatus}
+        </if>
+        order by id desc
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.chitchat.portal.bean.account.AccountBackpackInfo">
+        select *
+        from app_account_backpack_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long"
+            resultType="com.chitchat.portal.bean.account.AccountBackpackInfo">
+        select *
+        from app_account_backpack_info
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete
+        from app_account_backpack_info
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+</mapper>

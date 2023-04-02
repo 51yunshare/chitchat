@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chitchat.admin.dao.SysMenuDaoI">
+  <resultMap id="BaseResultMap" type="com.chitchat.admin.bean.SysMenu">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="permission" jdbcType="VARCHAR" property="permission" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="component" jdbcType="VARCHAR" property="component" />
+    <result column="icon" jdbcType="VARCHAR" property="icon" />
+    <result column="show_status" jdbcType="BIT" property="showStatus" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, parent_id, type, menu_name, permission, sort, page_routing, component, icon,
+    visible, created_time, modified_time, deleted
+  </sql>
+
+  <insert id="insert" parameterType="com.chitchat.admin.bean.SysMenu">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_menu (parent_id, type, menu_name,
+    permission, sort, path,
+    component, icon, show_status,
+    created_time, modified_time, deleted
+    )
+    values (#{parentId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{menuName,jdbcType=VARCHAR},
+    #{permission,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{path,jdbcType=VARCHAR},
+    #{component,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{showStatus,jdbcType=INTEGER},
+    now(), now(), #{deleted,jdbcType=INTEGER}
+    )
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.chitchat.admin.bean.SysMenu">
+    update sys_menu
+    <set>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="menuName != null">
+        menu_name = #{menuName,jdbcType=VARCHAR},
+      </if>
+      <if test="permission != null">
+        permission = #{permission,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="component != null">
+        component = #{component,jdbcType=VARCHAR},
+      </if>
+      <if test="icon != null">
+        icon = #{icon,jdbcType=VARCHAR},
+      </if>
+      <if test="showStatus != null">
+        show_status = #{showStatus,jdbcType=INTEGER},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=INTEGER},
+      </if>
+      modified_time = now(),
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="update" parameterType="com.chitchat.admin.bean.SysMenu">
+    update sys_menu
+    set parent_id = #{parentId,jdbcType=BIGINT},
+        type = #{type,jdbcType=INTEGER},
+        menu_name = #{menuName,jdbcType=VARCHAR},
+        permission = #{permission,jdbcType=VARCHAR},
+        sort = #{sort,jdbcType=INTEGER},
+        path = #{path,jdbcType=VARCHAR},
+        component = #{component,jdbcType=VARCHAR},
+        icon = #{icon,jdbcType=VARCHAR},
+        show_status = #{showStatus,jdbcType=INTEGER},
+        modified_time = now(),
+        deleted = #{deleted,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select *
+    from sys_menu
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByLongId" parameterType="java.lang.Long">
+    delete from sys_menu
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <!--用户权限集合-->
+  <select id="listMenuByUserId" resultType="com.chitchat.admin.bean.SysMenu">
+        select
+               distinct sm.*
+        from sys_menu sm,sys_user_role sur, sys_role_menu srm
+        where
+              sm.id = srm.menu_id
+          and sur.role_id = srm.role_id
+          and sm.deleted = 0
+          and sur.user_id = #{userId}
+  </select>
+
+  <resultMap id="ListMenuResultMap" type="com.chitchat.admin.vo.sys.SysMenuVO">
+    <id property="id" column="id" jdbcType="BIGINT"/>
+    <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
+    <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+    <result property="path" column="path" jdbcType="VARCHAR"/>
+    <result property="component" column="component" jdbcType="VARCHAR"/>
+    <result property="icon" column="icon" jdbcType="VARCHAR"/>
+    <result property="sort" column="sort" jdbcType="INTEGER"/>
+    <result property="showStatus" column="show_status" jdbcType="INTEGER"/>
+    <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+    <result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP"/>
+    <result property="type" column="type" jdbcType="INTEGER"/>
+    <collection property="roles" ofType="string" javaType="list">
+      <result column="code"/>
+    </collection>
+  </resultMap>
+
+  <!--所有菜单权限-->
+  <select id="listRoutes" resultMap="ListMenuResultMap">
+    select t1.id,
+           t1.menu_name,
+           t1.parent_id,
+           t1.path,
+           t1.component,
+           t1.icon,
+           t1.sort,
+           t1.show_status,
+           t3.code,
+           t1.type
+    from sys_menu t1
+           left join sys_role_menu t2 on t1.id = t2.menu_id
+           left join sys_role t3 on t2.role_id = t3.id
+    order by t1.sort asc
+  </select>
+
+</mapper>

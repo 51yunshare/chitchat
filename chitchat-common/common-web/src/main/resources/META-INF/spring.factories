@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.chitchat.common.web.exception.GlobalExceptionHandler,\
+  com.chitchat.common.web.config.FeignConfig,\
+  com.chitchat.common.web.config.WebMvcConfig
+
