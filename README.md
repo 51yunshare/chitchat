@@ -110,7 +110,7 @@ rabbitmq-plugins enable rabbitmq_delayed_message_exchange
 ### 搭建步骤
 
 1. 修改`bootstrap.yml`中Nacos地址
-2. 将配置文件导入到NacosServer中
+2. 将配置文件(config文件夹里面)导入到NacosServer中
 3. 修改NacosServer中的Redis、MySQL、RabbitMq、Oss、短信、Zego等相关配置
 
 ### 项目启动
